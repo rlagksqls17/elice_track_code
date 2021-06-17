@@ -181,3 +181,57 @@ JavaScript = 기능과 효과
 </body>
 </html>   
 ```
+      
+## 8. CSS 우선순위  
+      
+1. 항상 나중에 적용한 코드가 우선순위가 높다.  
+2. 디테일한 선택자일수록 우선순위가 높다.   
+3. class는 type보다 우선순위가 높다.
+4. ID는 Class보다 우선순위가 높다. 즉 ID \> Class \> Type  
+      
+```  
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>CSS 우선 순위</title>
+  
+  <style>
+  
+      p{
+          color: red;
+      }
+      p{
+          color: blue;
+      }
+      header h3{
+          background-color: green;
+      }
+      h3{
+          background-color: yellow;
+      }
+      .color{
+          color: blue;
+      }
+      h4{
+          color: red;
+      }
+      
+  </style>
+</head>
+<body>
+  
+  <p>순서 캐스케이딩</p>
+  <header>
+      <h3>디테일 캐스케이딩</h3>
+  </header>
+  
+  <h4 id = "color" class = "color">선택자 캐스케이딩</h4>
+</body>
+</html>   
+```
+## 9. CSS 속성  
+width, height: 일정 크기의 공간을 만들 수 있음  
+font- : size, family, style, weight  
+border : 테두리를 만들어 줌  
+ 
