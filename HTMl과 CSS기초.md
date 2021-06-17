@@ -148,10 +148,10 @@ JavaScript = 기능과 효과
 ```  
       
 ## 7. CSS 선택자   
-: HTML의 어떤 요소에 CSS를 적용할 것인가 
-      1. Type Selector : 특정 태그에 스타일을 적용  <h2>{}</h2>
-      2. Class Selector : 클래스 이름으로 특정 위치에 스타일을 적용 .coding{}  
-      3. ID Selector : ID를 이용하여 스타일을 적용 #coding{}  
+: HTML의 어떤 요소에 CSS를 적용할 것인가  
+      1. Type Selector : 특정 태그에 스타일을 적용  \<h2\>\{\}\</h2\>  
+      2. Class Selector : 클래스 이름으로 특정 위치에 스타일을 적용 .coding\{\}  
+      3. ID Selector : ID를 이용하여 스타일을 적용 #coding\{\}  
  
 ```  
    <!DOCTYPE html>
@@ -174,7 +174,7 @@ JavaScript = 기능과 효과
 </head>
 <body>
   
-  <h2> Type Hello World</h2> <!-- 타입 선택자 -->
+  <h2> Type Hello World</h2> <!-- 타입 선택자 -->  
   <h2 class = "bg">Class Hello World</h2> <!-- 클래스 선택자, id보다는 좀 더 작은 개념-->  
   <h2 id="bg">Id Hello World</h2> <!-- ID 선택자-->
   
