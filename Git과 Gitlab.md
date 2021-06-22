@@ -35,6 +35,14 @@ $ git init
 Initialized empty Git repository in C:/Users/joo/Desktop/Python_study/git_study/.git/
 ```  
 
+## 정해진 저장소에 새로운 파일을 반영시키려면?  
+![image](https://user-images.githubusercontent.com/74280650/122907730-66e48080-d38e-11eb-8d4a-56dcf932eb44.png)  
+```  
+git add comment.js  
+# comment.js 파일을 준비영역으로 보냄  
 
+git add . # 한꺼번에 파일을 보낼 때  
+git status # Staging area의 어떤 파일이 변경되었는지 확인 가능  
+```  
 
 
