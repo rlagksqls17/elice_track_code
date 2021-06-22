@@ -32,7 +32,9 @@ user.name=KimHanBin
 Git init # 기존의 디렉토리를 git repository로 설정  
 joo@pc MINGW64 /c/users/joo/Desktop/Python_study/git_study
 $ git init
-Initialized empty Git repository in C:/Users/joo/Desktop/Python_study/git_study/.git/
+Initialized empty Git repository in C:/Users/joo/Desktop/Python_study/git_study/.git/  
+
+
 ```  
 
 ## 정해진 저장소에 새로운 파일을 반영시키려면?  
@@ -134,16 +136,37 @@ git merge like_features # 수행시 충돌
 1. 원격저장소 받아오기  
 : 인터넷이나 네트워크 어딘가에 있는 저장소  
 
-1-1 ```Git clone``` 기존의 git repository를 복사  
+1-1 ```Git clone``` 기존의 git repository를 복사  (현재 폴더 내에 새로운 폴더를 생성)
+**만약 현재 폴더를 저장소로 쓰고 싶을 경우 git clone 명령의 마지막에 '.' 을 찍어줌**  
+```git clone [주소]```
 1-2 gitlab또는 Github에서 원하는 프로젝트에서 Clone 누름  
 1-3 여기서 clone with HTTPs 옵션으로 선택함  
 1-4 Git clone 뒤에 clone 버튼으로 확인한 원격저장소의 주소를 넣어줌  
-1-5 git remote add origin [저장소 주소]  # 명령어로 연결  
-1-6 git remote # 연결 확인  
-1-7 git remote show origin # 원격 저장소 확인  
-1-8 git remote rename origin git_test : 원격 저장소 단축 이름 변경  
-1-9 git remote rm git_test : 저장소 삭제  
+1-5 ```git remote add origin [저장소 주소]```  # 명령어로 연결  
+1-6 ```git remote``` # 연결 확인  
+1-7 ```git remote show origin``` # 원격 저장소 확인  
+1-8 ```git remote rename origin git_test``` : 원격 저장소 단축 이름 변경  
+1-9 ```git remote rm git_test``` : 저장소 삭제  
 
+2. 원격 저장소 동기화  
+2-1 pull : 원격 저장소에서 데이터 가져오기  + 병합  
+2-2 Fetch : 원격 저장소에서 데이터 가져오기만 함  
+2-3 Push : 로컬 저장소에서 작업한 내용을 원격저장소에 반영함  
+**다른 사람이 먼저 Push 한 상태에서는 Push할 수 없음, 따라서 Merge 먼저 해야 함**  
+
+> 예를 들어, 계산기 프로젝트를 한다고 쳐보자.  
+> 1. Calculator라는 원격저장소를 github에 저장했다. (파일 아무것도 없음)  
+> 2. 네 사람 각자 더하기, 빼기, 곱하기, 나누기 기능을 가진 코드를 짜야한다.  
+> 3. 먼저 네 사람은 모두 Calculator 원격저장소를 다운 받아 연결해야한다.  
+> 4. 각자 기능을 만든다. Branch를 만들어 기능을 세분화하는 것 가능하나, 반드시 병합해주어야한다.  
+> 5. 병합하고나면, 해당 원격저장소에 push 한다. (이때 다른사람이 작업한 것을 Merge 먼저 해주어야 한다.)  
+
+## Origin/master  
+```
+git remote add origin [주소]  
+# 이는 원격저장소의 이름을 origin으로 지정한다는 의미임  
+보통 기본적으로 만들어진 원격저장소의 이름은 origin이 default 값임  
+```  
 
 
 
