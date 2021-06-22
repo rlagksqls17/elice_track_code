@@ -45,4 +45,29 @@ git add . # 한꺼번에 파일을 보낼 때
 git status # Staging area의 어떤 파일이 변경되었는지 확인 가능  
 ```  
 
+## Git 저장소 반영  
+comment.js **파일을 staging 하였을 때**, commit을 추가  
+```  
+git commit -m "문자" #.git 저장소 내에 staging 파일을 저장  
+git commit --amend # 앞에서 적은 메세지에 오타가 있거나 누락된 파일이 있을 경우 내용 변경  
+git log # 저장소 반영 내용이 궁금할 경우 사용  
+```  
+## Git 관리 상태 확인  
+git status : staging file 들의 상태 확인    
+git log : .git repositroy에 존재하는 history 확인  
+  -p : 각 commit의 수정 결과를 보여주는 diff와 같은 역할을 수행  
+  -n : 상위 n개의 commit 만 보여줌  
+  --stat : 어떤 파일이 commit 에서 수정되고 변경되었는지, 파일 내 라인이 추가되거나 삭제되었는지 확인  
+  --pretty=oneline : 각 commit을 한 줄로 출력
+  **--graph** : commit 간의 연결된 관계를 아스키 그래프로 출력  
+  -S function_name : 코드에서 추가하거나 제거된 내용 중 특정 텍스트가 포함되어 있는지 검사  
+git diff : commit 된 파일 중 변경된 사항을 비교할 때  
+
+
+
+
+
+
+
+
 
