@@ -52,12 +52,25 @@ Npm install --save-dev eslint  # eslint 프로그램 설치
 ./node_modules/.bin/eslint .--init # 세부사항 설정  
 ./node_modules/.bin/eslint .--fix # 세부사항 틀린 부분 고치기  
 ```  
-
-## Gitlab_통계  
-
+  
 ![image](https://user-images.githubusercontent.com/74280650/123106360-8a352b80-d473-11eb-9a35-5aae3b7bd62f.png)  
  이런 식으로 스테이지 추가 가능  
- 
+
+## Gitlab_통계  
+: Analytics 탭 사용  
+
+## Gitlab_Operations  
+Metrics : 메모리 사용량 확인  
+Environment -> Deploy : roll-back 가능 (원하는 커밋에서 새로고침 버튼을 누르면 됨)  
+
+## Gitlab_Error Tracking  
+: 배포된 서비스에서 발생하는 Error에 대한 정보를 추적하기 위해 Gitlab에서 제공하는 기능  
+
+## Gitlab_Feature flags  
+: 특정 기능을 껏다 켰다 할 수 있음  
+
+
+
 
 
 
