@@ -30,7 +30,49 @@ Heroku : CI 없이 배포를 위한 사이트
   
 4. Git lab - Settings - General로 이동
   : Merge checks -> pipelines must succeed 체크   
-  : **이를 통해 CI를 Pass하지 못한 경우 Merge 할 수 없도록 설정 가능**  
+  : **이를 통해 CI를 Pass하지 못한 경우 Merge 할 수 없도록 설정 가능**    
+  
+## Gitlab_Wiki  
+: 프로젝트의 내용을 이해하기 쉽게 설명 작성 가능  
+: 해당 문구에 링크 작성 가능    
+
+## Member 권한과 접근  
+: 멤버 탭에서 멤버를 설정  
+: 서브그룹을 설정 가능  
+: 서브 그룹과 프로젝트는 상위 그룹의 멤버를 상속한다.  
+: 그룹을 한 번에 초대할 때만 Max Access Level을 넘지 못한다.  
+: 그룹 아래에 추가적으로 서브 그룹을 계속 생성할 수 있다.  
+
+## Lint  
+: 프로그램 실행에 문제 생길 여지가 적지만, 나중에 문제될 수 있는 자잘한 문제들을 표시  
+: '' or "" 통일 여부나 누락된 세미콜론 찾기 등  
+
+```  
+Npm install --save-dev eslint  # eslint 프로그램 설치  
+./node_modules/.bin/eslint .--init # 세부사항 설정  
+./node_modules/.bin/eslint .--fix # 세부사항 틀린 부분 고치기  
+```  
+
+## Gitlab_통계  
+
+![image](https://user-images.githubusercontent.com/74280650/123106360-8a352b80-d473-11eb-9a35-5aae3b7bd62f.png)  
+ 이런 식으로 스테이지 추가 가능  
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
   
 
 
