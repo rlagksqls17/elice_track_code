@@ -69,6 +69,14 @@ Environment -> Deploy : roll-back 가능 (원하는 커밋에서 새로고침 �
 ## Gitlab_Feature flags  
 : 특정 기능을 껏다 켰다 할 수 있음  
 
+# Visual Studio Code 단축키  
+```컨트롤 + 쉬프트 + 슬래쉬``` : 기본 주석  
+```컨트롤 + 알트 + A``` : 블록 주석  
+```컨트롤 + 쉬프트 + P``` : 에디터 제공 명령어들을 검색 가능  
+
+
+
+
 
 
 
