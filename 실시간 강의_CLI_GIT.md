@@ -64,6 +64,9 @@ c968d88 (HEAD) work 3
 
 
 아래처럼 입력하면 화살표가 아닌 콤마로 가리켜짐  
+  
+  
+  
 **dettached**  
 ```
 joo@pc MINGW64 ~/Desktop/work ((c968d88...))
@@ -81,6 +84,9 @@ c968d88 work 3
 ```  
 
 이렇게 해도 나중에 새로운 커밋을 할때 master는 c(원래 버전)를 가리키고,  HEAD는 D(신 버전)를 가리키게 됨  
+  
+  
+  
 **attached**  
 ```  
 joo@pc MINGW64 ~/Desktop/work (master)
@@ -91,6 +97,8 @@ c968d88 work 3
 8ad2762 work w
 326a7a5 work 1
 ```    
+  
+   
 
 **즉 롤백 후 돌아가고 싶을 때는 master가 현재를 가리키기 때문에 HEAD를 그냥 master로 체크아웃 하면 됨**  
 
