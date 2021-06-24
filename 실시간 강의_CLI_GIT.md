@@ -33,7 +33,7 @@ HEAD를 원하는 버전의 ID에 올려놓게 해야 한다.
 91875fd (HEAD -> master) work 5
 f9b6352 work 4
 c968d88 work 3
-8ad2762 work w
+8ad2762 work 2
 326a7a5 work 1
 ```    
 ```  
@@ -41,7 +41,7 @@ $ git log --oneline
 91875fd (HEAD -> master) work 5
 f9b6352 work 4
 c968d88 work 3
-8ad2762 work w
+8ad2762 work 2
 326a7a5 work 1
 
 joo@pc MINGW64 ~/Desktop/work (master)
@@ -58,7 +58,7 @@ $ git log --oneline --all
 91875fd (master) work 5
 f9b6352 work 4
 c968d88 (HEAD) work 3
-8ad2762 work w
+8ad2762 work 2
 326a7a5 work 1
 ```   
 
@@ -79,7 +79,7 @@ $ git log --oneline --all
 91875fd (HEAD, master) work 5
 f9b6352 work 4
 c968d88 work 3
-8ad2762 work w
+8ad2762 work 2
 326a7a5 work 1
 ```  
 
@@ -94,7 +94,7 @@ $ git log --oneline --all
 91875fd (HEAD -> master) work 5
 f9b6352 work 4
 c968d88 work 3
-8ad2762 work w
+8ad2762 work 2
 326a7a5 work 1
 ```    
   
