@@ -125,7 +125,46 @@ link로 불러오기
 </html>   
 ```
 ## CSS 속성  
-width, height: 일정 크기의 공간을 만들 수 있음  
-font- : size, family, style, weight  
-border : 테두리를 만들어 줌  
- 
+**width, height**: 일정 크기의 공간을 만들 수 있음  
+```html
+<p clsss = "paragraph"> 프로그래밍을 배워봐요! </p>  
+
+.paragraph{ width: 500px; height: 500px; }
+```
+
+**font-** : size, family, style, weight  
+```html  
+<p class = "paragraph"> 즐거운 웹프로그래밍!</p>  
+
+.paragraph{
+    font-size: 50px; /*글자크기*/
+    font-family: Arial, sans-serif; /*글꼴, 입력한 순서대로 우선순위 적용, 마지막에 작성하는 디폴트 값*/
+    font-style: italic; /*글자 기울기*/
+    font-weight: bold; /*글자 두께*/  
+}
+```
+
+**border** : 테두리를 만들어 줌  
+```html
+<p class = "paragraph"> 즐거운 웹프로그래밍!</p>
+
+.paragraph{
+    width: 500px;
+    weight: 500px;
+    border-style: solid;
+    border-width: 10px;
+    border-color: red;
+}
+```  
+
+**background** : 배경  
+```html
+.paragraph{
+    background-color: yellow;
+    background-image: url(이미지 경로);
+    background-repeat: no-repeat;
+    background-position: left;
+}
+```  
+
+
