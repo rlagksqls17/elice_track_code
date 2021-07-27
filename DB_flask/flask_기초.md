@@ -249,3 +249,25 @@ def page_not_found(error):
     return render_template("page_not_found.html")
 ```  
 
+## Ajax란?  
+
+동기 : 앞의 작업이 끝나지 않으면 다음 작업을 할 수 없다.  
+비동기 : 앞의 작업 상태와 상관없이 다음 동작을 수행할 수 있다.  
+
+이러한 비동기 처리 방식에는 Fetch, AXIOS, AJAX가 있음  
+
+**Ajax의 형태**  
+```javascript
+$.ajax({
+    url : 'URL 주소', // Ajax로 요청을 보낼 주소를 적는 곳
+    type : '메서드', // Ajax로 보낼 방법을 적는 곳 
+    data : {}, // Ajax 통신으로 보낼 데이터를 적는 곳
+    success : function(res){ // 통신이 성공한 후 실행되는 함수
+        console.log(res)
+    }
+})  
+
+///HTML  
+<button onclick = ajaxTest()> 호출 </button>
+```  
+
