@@ -249,6 +249,25 @@ function changeColorRed(){
 }
 ```
 
+#### setInterval
+
+```jsx
+//jsx
+function tick() {
+  const element = (
+    <div>
+      <h1>{new Date().toLocaleTimeString()}</h1>
+    </div>
+  );
+  ReactDOM.render(element, document.getElementById('root'));
+}
+
+// tick 함수를 1초에 한 번씩 호출 (1000)
+setInterval(tick, 1000);
+```
+
+
+
 ### 요소출력  
 
 #### document.write('element')
@@ -302,6 +321,41 @@ scrollUp('scroll-btn')
 /* <body>
   <button class="scroll-top" id="scroll-btn">TOP</button>
 </body> */
+```
+
+#### event.target.value
+
+```jsx
+// React  
+class InputUserData extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: "엘리스 토끼",
+      job: "developer"
+    };
+  }
+
+  //name 데이터를 변경하는 메소드
+  onNameHandler = event => {
+    //setState를 사용해 name 데이터 업데이트 기능을 구현
+    this.setState({
+        // 삽입된 입력값 (name)은 event.target.value를 통해 가져올 수 있음
+        // event.target은 자바스크립트에서 이벤트에 대상을 얻기 위해 사용됨
+        name : event.target.value
+    });
+      
+  render(){
+      const { name, job } = this.state;
+      return (
+      	<div>
+        <div>
+             name: <input type="text" value={name} onChange={this.onNameHandler} /> 
+        </div>
+        </div>
+      )
+  }
+  };
 ```
 
 
@@ -586,22 +640,58 @@ const App = () => {
 3. Class Component/Function Component로 나뉨 
 
 ```jsx
-// class Component
-class Hello extends Component{
-    render(){
-        const {name} = this.props
-        return <div>{name}님 안녕하세요.</div>
-    }
-}
-
 // Function Component => 주로 사용
+// 화살표 함수  
 const Hello = (props) => {
     const {name} = props
     return <div>{name}님 안녕하세요.</div>
 }
+// 기본 함수  
+function Clock(props) {
+  return (
+    <div>
+      <h1>{props.date.toLocaleTimeString()}.</h1>
+    </div>
+  );
+}  
+// class Component
+// 만들 때는 React.Component를 상속받고 render() 메소드를 구현해야 함  
+class Clock extends React.Component {
+  render() {
+    return (
+      <div>
+        <h1>{this.props.date.toLocaleTimeString()}.</h1>
+      </div>
+    );
+  }
+}
 ```
 
 4. Controlled Component/Uncontrolled Component 
+
+#### 컴포넌트 합성  
+
+```jsx
+class Elice extends React.Component {
+  render() {
+    return <h2>I am a elice!</h2>;
+  }
+}
+
+// Question 클래스에서 Elice 클래스를 참조 중
+class Question extends React.Component {
+  render() {
+    return (
+      <div>
+      <h1>Who are you?</h1>
+      <Elice />
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<Question />, document.getElementById('root'));
+```
 
 #### props  
 
@@ -621,6 +711,145 @@ const MyComponent = (props) => {
 <div>안녕하세요.</div>
 </MyComponent>
 ```
+
+#### state  
+
+```jsx
+// 원래 코드
+function Clock(props) {
+  return (
+    <div>
+      <h1>{props.date.toLocaleTimeString()}.</h1>
+    </div>
+  );
+}
+
+function tick() {
+  ReactDOM.render(
+    <Clock date={new Date()} />,
+    document.getElementById('root')
+  );
+}
+
+setInterval(tick, 1000);
+```
+
+```jsx
+class Clock extends React.Component {
+  // props, this.state를 지정
+    // 불필요한 내부 데이터 은닉
+  constructor(props) {
+    super(props);
+    this.state = {date: new Date()};
+  }
+  // 기존 클래스 함수
+  render() {
+    return (
+      <div>
+        <h1>{this.state.date.toLocaleTimeString()}.</h1>
+      </div>
+    );
+  }
+}
+
+// 렌더링
+ReactDOM.render(
+  <Clock //원래 : date={new Date()} />,
+  document.getElementById('root')
+);
+```
+
+**setState()**  
+
+State를 변경하기 위해서는 직접 값을 수정하는 것이 아니라 setState() 메소드를 이용해야 함  
+
+```jsx
+// onClickEventHandler() 메소드가 호출되면 State의 name 데이터가 "엘리스 토끼"로 변경됨
+onClickEventHandler = () => {
+  this.setState({
+    name: "엘리스 토끼"
+  });
+};
+```
+
+
+
+### Element
+
+엘리멘트란 React 앱의 가장 작은 단위를 말함  
+
+#### Render 와 ReactDOM
+
+```jsx
+// App.js
+const name = 'Josh Perez';
+const element = <h1>Hello, {name}</h1>;
+
+// id가 root인 태그를 찾은 후, 정의한 엘리먼트를 ReactDOM에 렌더링
+ReactDOM.render(element,document.getElementById('root'));
+```
+
+```html
+<!--index.html-->
+<div id = "root"></div>
+```
+
+### 생명주기  메소드
+
+React의 생명 주기는 컴포넌트가 이벤트를 다룰 수 있는 특정 시점을 말함  
+
+**마운트** : 컴퓨터가 실제 DOM에 삽입 되는 것 
+
+**업데이트** : 컴포넌트가 변하는 것  
+
+**언마운트** : 컴포넌트가 DOM 상에서 제거되는 것
+
+#### constructor() 
+
+State 데이터를 초기화 하는 메소드
+
+#### render()
+
+클래스 컴포넌트에서 반드시 구현되어야 하는 메소드  
+
+#### componentDidMount()
+
+컴포넌트가 마운트 된 직후 호출되는 메소드
+
+```jsx
+class Header extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {favoritecolor: "red"};
+  }
+  // setTimeout 이용해서 타이머를 실행
+  // 현재 코드를 실행하면 처음에는 red가 표시되다가 1초 뒤에 yellow로 변하게 됨
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({favoritecolor: "yellow"})
+    }, 1000)
+  }
+  render() {
+    return (
+      <h1>My Favorite Color is {this.state.favoritecolor}</h1>
+    );
+  }
+}
+
+ReactDOM.render(<Header />, document.getElementById('root'));
+```
+
+
+
+#### componentDidUpdate()
+
+업데이트가 진행된 직후에 호출되는 메소드  
+
+#### componentWillUnmount()  
+
+컴포넌트가 마운트 해제되어 제거되기 직전에 호출되는 메소드
+
+
 
 **예제 코드 1**  
 
@@ -655,33 +884,38 @@ const Welcome = () => {
 export default Welcome;
 ```
 
-### Element
-
-엘리멘트란 React 앱의 가장 작은 단위를 말함  
-
-컴포넌트의 구성 요소
-
-#### Render 
-
-HTML요소 (엘리멘트) 요소들을 화면을 그리는 것
+**예제 코드2**
 
 ```jsx
-// App.js
-const name = 'Josh Perez';
-const element = <h1>Hello, {name}</h1>;
+//버튼 클릭된 횟수를 저장
+let value = 0
 
-// element를 선택된 요소에 렌더링 함  
-ReactDOM.render(element,document.getElementById('root'));
+
+//버튼 클릭시 횟수를 증가시키는 함수를 정의합니다.
+function click() {
+  value += 1;
+}
+
+
+function tick(){
+  const element = (
+    <div>
+      <h1>버튼을 클릭해보세요</h1>
+      <button onClick={click}>Click Me!</button>
+      <h2>총 {value}번 클릭했습니다.</h2>
+    </div>
+  );
+  
+  //ReactDOM과 element를 렌더링합니다.
+  ReactDOM.render(element, document.getElementById('root'));
+  
+}
+
+//1초마다 tick()함수 호출
+setInterval(tick, 1000);
+
+serviceWorker.unregister();
 ```
 
-```html
-<!--index.html-->
-<div id = "root"></div>
-```
 
-#### ReactDOM  
-
-DOM(Document Object Model) : 객체지향 모델을 통해 구조화된 문서를 표현  
-
-**React는 실제 DOM을 추상화하여 가상 DOM에 만들어두고, 데이터가 업데이트 되면 한번에 렌더링함**
 
