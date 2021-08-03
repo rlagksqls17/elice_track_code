@@ -65,18 +65,50 @@ db.init_app(app)
 모델.query.all() # 모두 선택  
 
 # and 선택  
-member_list = Member.query.filter((Member.name == key1) & (Member.age==key2)).all()  
+member_list = 모델이름.query.filter((Member.name == key1) & (Member.age==key2)).all()  
 
 # or 선택  
-member_list = Member.query.filter((Member.name == key1) | (Member.age==key2)).all()
+member_list = 모델이름.query.filter((Member.name == key1) | (Member.age==key2)).all()
 ```
+
+### 삽입  
+
+```python
+# 파일 열어서 삽입
+@app.route('/', methods=['GET', 'POST'])
+def _update():
+    if(Member.query.count()==0):
+        file = open("member.txt", 'r')
+        for i in file.readlines():
+            a, b, c,= i.split(',')
+            user = Member(int(a), b, c)
+            db.session.add(user)
+        db.session.commit()
+        file.close()
+        
+# User 모델에 삽입     
+user = User(name, email, description)
+db.session.add(user)
+```
+
+### 수정  
+
+```python
+search_id = request.form['id']
+change_name = request.form['name']
+change_addr = request.form['addr']
+target_member = Member.query.filter((Member.id == int(search_id))).all()[0]
+target_member.name = change_name
+target_member.addr = change_addr
+```
+
+
 
 ### 커밋
 
 ```python
 # 해당 db 모델을 수정후에 커밋 해줘야 함
-db.session.add(user)
-db.session.commit()
+    db.session.commit()
 ```
 
 
@@ -110,6 +142,27 @@ result = collection.insert_one(dictionary)
 ```python
 # 데이터 여러개 삽입  
 result = collection.insert_many([dic1, dic2, ...])  
+```
+
+### 데이터 수정  
+
+```python
+# form형식을 통해 데이터를 받음
+data = {
+    "show_id": request.form['show_id'] # name
+}
+# set : data를 써서 collection 업데이트
+col.update_one(query, {"$set": data}) 
+```
+
+### 데이터 삭제  
+
+```python
+@app.route("/delete/<_id>")
+def delete(_id):
+    query = {"_id" : ObjectId(_id)}
+    col.delete_one(query)
+    return redirect("/")
 ```
 
 ### 데이터 출력
@@ -187,9 +240,10 @@ def show(show_id):
 # request 라이브러리를 사용  
 from flask import request  
 
-# request.form을 이용해 POST를 통해 전송된 데이터를 저장 확인  
+# request.form을 이용해 POST를 통해 전송된 데이터를 저장 확인 
+# main.py
 data = {
-    "show_id": request.form['show_id']
+    "show_id": request.form['show_id'] # name
 }
 ```
 
@@ -223,11 +277,14 @@ def 메소드 명():
 ...
 ```
 
-### resirect  
+### redirect  
 
-```py
+```python
 # URL을 새롭게 지정  
-redirect("이동할 URL")
+return redirect("이동할 URL")
+
+# id 변수 포함시켜 리다이렉트
+return redirect(f"/netflix/{_id}")
 ```
 
 ### ajax  

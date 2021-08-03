@@ -43,9 +43,12 @@ b.forEach(function(item){
 b.forEach => item => console.log(item)
 
 // 순차적으로 함수를 실행하여 새로운 배열을 반환
-const newB = b.map(function(item){
-    return item * 2;
-})
+//numbers라는 arrary, 1~5까지 아이템이 존재한다.
+const numbers = [1, 2, 3, 4, 5]; 
+//각 아이템의 2배를 저장
+const doubled = numbers.map(number => number * 2); 
+// 결과: [2, 4, 6, 8, 10]
+console.log(doubled); 
 
 // 말그대로 필터  
 const newB = b.filter(function(item){
@@ -54,6 +57,53 @@ const newB = b.filter(function(item){
 
 //리스트 끝에 요소 추가  
 lists.push(i)
+
+//**jsx**
+const listItems = numbers.map(number =>
+  <li>{number}</li> /*컴포넌트의 리턴 값*/
+);
+
+function NumberList(props) {
+  const numbers = props.numbers;
+  const listItems = numbers.map((number) =>
+   /*li태그에 직접 key값을 부여*/ 
+   // 보통 데이터의 id 값을 key값으로 부여
+   // <태그명 key = 'key 데이터'></태그명>
+    <li key={number.id}>
+      {number}
+    </li>
+  );
+  return (
+    <ul>{listItems}</ul>
+  );
+// 혹은 map() 전체를 JSX 안에 넣으면 코드가 깔끔해질 수 있음  
+function NumberList(props) {
+  const numbers = props.numbers;
+  return (
+    <ul>
+      {numbers.map((number) =>
+        <ListItem key={number.toString()}
+                  value={number} />
+      )}
+    </ul>
+  );
+}
+}
+
+function NumberList(props) {
+  const numbers = props.numbers;
+  const listItems = numbers.map((number) =>
+    // ListItem 컴포넌트를 추출한 경우
+    // 키 값을 지정해야합니다! : 배열값을 반환하기 때문이죠.
+       <ListItem key={number.toString()}
+              value={number} />
+  );
+  return (
+    <ul>
+      {listItems}
+    </ul>
+  );
+}
 ```
 
 #### spread syntax  
@@ -89,6 +139,12 @@ const text1 = "Hello" + name;
 
 // now  
 const text2 = `hello ${name}`;
+```
+
+#### string.includes('검색할 문자')
+
+```jsx
+(password.includes('#') == true)
 ```
 
 ### 객체
@@ -244,7 +300,7 @@ inputElement.value = value
 var blockOne = document.getElementById('red');
 
 function changeColorRed(){
-    // 해당 요소의 html에 red라는 클래스를 추가
+    // 해당 요소의 html에 red라는 클래스를 변경
     blockOne.setAttribute('class', 'red');
 }
 ```
@@ -301,7 +357,7 @@ console.log(msg [, subst1, ..., substN]);
 
 ## 이벤트  
 
-: HTML 요소에 대한 사건의 발생    
+: HTML 요소에 대한 사건의 발생  (React도 동일)
 
 #### addEventListener  
 
@@ -313,6 +369,9 @@ function scrollUp(e) {
     target.addEventListener('click', function(){
         window.scrollTo({top:0, left:0, behavior:'smooth'})
     })
+    // 밖으로 뺄 때는 다음과 같이 사용
+    // target을 함수 밖에서 정의해야 함
+    target.addEventListener('click', scrollUp)
 }
 
 scrollUp('scroll-btn')
@@ -480,6 +539,19 @@ const keyDownHandle = (event) => {
 
 : 마우스를 올렸을 때 이벤트 발생
 
+## import  
+
+```jsx
+// 권장
+import {sayHi, sayBye} from './say.js';
+// 비권장
+import * as say from './say.js';
+// 이름을 바꿔서 모듈을 가져옴
+import {sayHi as hi, sayBye as bye} from './say.js';
+```
+
+
+
 # React  
 
 ### 디렉토리 구조 살펴보기  
@@ -563,6 +635,7 @@ import './App.css';
 
 function App() {
   return (
+      // Class가 아닌 ClassName을 사용
     <div className="App">
         <div style = {{
         padding: 48,
@@ -697,6 +770,7 @@ ReactDOM.render(<Question />, document.getElementById('root'));
 
 ```jsx
 const MyComponent = (props) => {
+    // 정의는 return 문 밖에서
     const { user, color, children } = props  
     
     return(
@@ -709,13 +783,21 @@ const MyComponent = (props) => {
 
 <MyComponent user = {{name: "민수"}} color= "blue">
 <div>안녕하세요.</div>
-</MyComponent>
+</MyComponent>  
+
+// 구조 분해 할당으로 간결하게 props를 받아오는 방법
+const Welcome = (props) => {
+    const { a, b, c } = props;
+    return <div>...</div>
+}
 ```
 
 #### state  
 
+컴포넌트 내에서 유동적으로 변할 수 있는 값을 저장
+
 ```jsx
-// 원래 코드
+// props 사용 시 코드
 function Clock(props) {
   return (
     <div>
@@ -758,6 +840,57 @@ ReactDOM.render(
   document.getElementById('root')
 );
 ```
+
+```jsx
+import {useState} from 'react';
+
+function Example(){
+    // 초기값 0
+    const [count, setCount] = useState(0);
+     // state 변경시 리액트가 자동으로 렌더링 해줌
+    // set 함수를 씀으로써 리액트가 자동으로 알아차림
+    return (
+    	<div>
+            <p>버튼을 {count}번 눌렀습니다.</p>
+            <button onClick={() => setCount(count + 1)}>
+                
+                
+            // 여러줄로 사용하려면 다음과 같이 이벤트 등록
+            setCount({current} => {
+                    return current + 1
+                })
+                클릭
+            </button>
+        </div>
+    );
+}
+// 또는
+  return (
+    <div className="App">
+        <span>{count}회 클릭하였습니다.</span>
+        <button onClick={() => {
+            setCount(count+1);
+        }}>클릭</button>
+    </div>
+  );
+```
+
+```jsx
+// 오브젝트를 갖는 State를 만들 때 주의사항  
+// 바로 object나 array 내부의 값만 변경할 경우 React가 새로운 값으로 변경된 것을 인지하지 못한다.
+import { useState } from "react";
+
+const [user, setUser] =
+      useState({name:'민수', grade: 1})
+	setUser((current) => {
+        // 객체 복사
+        const newUser = {...current}
+        newUser.grade = 2
+        return newUser
+    })	
+```
+
+
 
 **setState()**  
 
@@ -849,6 +982,12 @@ ReactDOM.render(<Header />, document.getElementById('root'));
 
 컴포넌트가 마운트 해제되어 제거되기 직전에 호출되는 메소드
 
+#### export
+
+```jsx
+export default Student;
+```
+
 
 
 **예제 코드 1**  
@@ -917,5 +1056,322 @@ setInterval(tick, 1000);
 serviceWorker.unregister();
 ```
 
+### 이벤트  
 
+1.리액트에서 이벤트의 이름은 카멜(Camel) 표기법으로 사용  
+
+2.이벤트에 실행할 코드 전달(X) 함수 형태의 객체 전달(O)
+
+```jsx
+<input type = "text"
+    name = "message"
+    placeholder = "input message"
+    // 이벤트 이름은 카멜 표기법으로 사용
+    onChange = {
+        // 이벤트를 실행할 코드를 그대로 전달하는 것이 아니라 아래 onClick 처럼 함수의 형태로 객체 전달
+        // onChange = {함수명}
+        (e) => {
+            console.log(e.target.value)
+        }
+    }
+```
+
+3. 직접 만든 리액트 컴포넌트에는 이벤트를 자체적으로 설정할 수 없음 (<div><button><p><input>)  
+
+```jsx
+// 안 되는 예제 코드  
+render() {
+    return (
+        <EventPractice onLoad={
+            ()=>{
+            console.log("test");
+            }
+        }/>
+    );
+}
+```
+
+#### 이벤트 등록
+
+```jsx
+// 함수형 컴포넌트에 이벤트 정의
+function ActionLink(){
+	// 등록 부분
+    function handleClick(e){
+        console.log('The link was clicked');
+    }
+    // 이벤트 호출 부분
+	return (
+	<a href= "#" onClick = {handleClick}>
+	 Click me    
+	</a>
+		);
+}
+
+// 클래스형 컴포넌트에 이벤트 정의 (props 포함)
+class Header extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {favoritecolor: "red"};
+ // 1. 이벤트 바인딩
+     this.이벤트명 = this.이벤트명.bind(this);
+  }
+    
+// 2. 이벤트 정의  
+    이벤트 명 = () =>{
+        
+    }
+    
+// 3. 이벤트 호출
+  render() {
+    return (
+      <h1 onClick = {this.이벤트명}>My Favorite Color is {this.state.favoritecolor}</h1>
+    );
+  }
+}
+
+// 클래스인데 props 따로 지정 안할 시 **유용한 코드**  
+import React from "react";
+
+export default class Example2 extends React.Component {
+  state = {
+    text: "텍스트",
+  };
+
+  handleChange = (e) => {  // <- input값으로 text 변경 함수
+    this.setState({
+      text: e.target.value,
+    });
+  };
+
+  render() {
+    return (
+      <div>
+        <input onChange={this.handleChange} /> // <-변경된 곳
+        <h1>{this.state.text}</h1>
+      </div>
+    );
+  }
+}
+```
+
+#### 이벤트 핸들링 하기  
+
+```jsx
+// 1. 함수로 작성하여 핸들링 하기   
+<button onClick={
+        () => {
+            alert(this.state.message)
+            this.setState({
+                message : ''
+            })
+        }
+    }>
+</button>
+// 2. 함수 미리 작성 후, 핸들링  
+constrcutor(props){
+    super(props);
+    // 바인딩 : 해당 함수를 인지시켜줌
+    this.handleClick = this.handleClick.bind(this);
+}
+
+handleClick(){
+    console.log("message == ",this.state.message);
+    this.setState({
+            message : ''
+    })
+}
+```
+
+#### 이벤트 핸들러에 인수 전달하기  
+
+```jsx
+// id 값을 추가 인수로 전달해야 하는 경우  
+// e : React 이벤트를 나타내는 인자
+<button onClick={(e) => this.이벤트명(매개변수, e)}></button>
+// bind를 사용하는 경우 e를 따로 전달해주지 않아도 됨
+// 명시적으로 bind 지정 필요
+<button onClick={this.이벤트명.bind(this, 매개변수)}></button>
+
+// 예제 코드  
+class EventClass extends React.Component {
+  constructor(props) {
+    super(props);
+    // binding이 필요없음
+  }
+
+  //handleClick 이벤트를 정의합니다. 인자값을 받아 alert()을 출력합니다.
+  handleClick = (data) => {
+    alert(`전달받은 인자값: ${data}`)
+  }
+
+
+  render() {
+    var data = "ABCDEFG"
+    return (
+      //data값을 인자값으로 제공하는 이벤트 핸들러를 작성합니다. 
+      <button onClick = {(e) => this.handleClick(data,e)}>
+        버튼을 눌러주세요!
+      </button>
+    );
+  }
+}
+```
+
+#### 조건부 렌더링  
+
+```jsx
+// 1
+function Greeting(props) { //인사하는 컴포넌트 선언
+  const isLoggedIn = props.isLoggedIn; //props에서 받아온 isLoggedIn값을 inLoggedIn 변수에 할당
+  if (isLoggedIn) { //할당한 변수의 값을 if문으로 확인 (= 조건별로 구분하기)
+    return <UserGreeting /> //true일 때 실행되는 컴포넌트
+  }
+  return <GuestGreeting /> //false일 때 실행되는 컴포넌트
+
+  ReactDOM.render(
+    //isLoggedIn={true}; 로 하면 어떤 컴포넌트가 실행될지 생각해보세요!
+    <Greeting isLoggedIn={false} />, //Greeting이라는 컴포넌트를 불러올 때, isLoggedIn이라는 props를 주고, props의 false 값을 할당합니다.
+    document.getElementById('root')
+  );
+}
+
+// 2  
+class LoginControl extends React.component {
+  constructor(props) {
+    super(props)
+    this.handleLoginClick = this.handleLoginClick.bind(this);
+    this.handleLogoutClick = this.handleLogoutClick.bind(this);
+    this.state = {isLoggedIn: false};
+  }
+
+  handleLoginClick() {
+    this.setState({isLoggedIn: true})
+  }
+
+  handleLogoutClick() {
+    this.setState({isLoggedIn: false})
+  }
+
+  render() {
+    const isLoggedIn = this.state.isLoggedIn;
+    let button; //버튼 변수 선언 (바로, 이 변수가 element variables 입니다.) 컴포넌트를 이 변수에 할당할 수 있다는 의미입니다. (어려운 개념이 아니니, 겁 먹지 마세요!)
+
+    if(isLoggedIn) {
+      button = <LogoutButton onClick={this.handleLogoutClick} />; //로그인 상태일 경우, button변수에 LogoutButton 엘리먼트를 할당
+    } else {
+      button = <LoginButton onClick={this.handleLoginClick} />; //로그 아웃 상태일 경우, button변수에 LoginButton 엘리먼트를 할당
+    }
+
+    return (
+      <div>
+        <Greeting isLoggedIn={isLoggedIn} /> //Greeting 컴포넌트를 보여주고 있다.
+        {button} //button 엘리먼트를 렌더링하고 있다.
+      </div>
+    )
+  }
+}
+
+ReactDOM.render(
+  <LoginControl />,
+  document.getElementById('root')
+);
+
+// 3. JSX로 구현하기  
+function Mailbox(props) { //Mailbox라는 function component 선언
+  const unreadMessages = props.unreadMessages; //읽지 않은 메세지 값을 받아 unreadMessages 변수에 할당
+/* 조건부 렌더링 부분! */
+  return (
+    <div>
+      <h1>Hello!</h1>
+            /*이 부분이 true이면 렌더링, false면 렌더링 하지 않는다.*/
+      {unreadMessages.length > 0 && /* unreadMessages 의 길이가 0보다 크면 아래 <h2> 태그를 렌더링 */
+        <h2>
+          You have {unreadMessages.length} unread messages.
+        </h2>
+      }
+    </div>
+  );
+}
+
+const messages = ['React', 'Re: React', 'Re:Re: React']; //messages 배열에 3가지 값을 담았습니다.
+ReactDOM.render(
+  <Mailbox unreadMessages={messages} />, // props 값을 받는다.
+  document.getElementById('root')
+);
+
+// 4. 
+render() {
+  const isLoggedIn = this.state.isLoggedIn;
+  return (
+    <div>
+            {/* 중괄호 안에서 isLoggedIn이 true이며 LogoutButton 컴포넌트를 렌더링, false면 LoginButton 컴포넌트를 렌더링 */}
+      {isLoggedIn ? ( 
+        <LogoutButton onClick={this.handleLogoutClick} />
+      ) : (
+        <LoginButton onClick={this.handleLoginClick} />
+      )}
+    </div>
+  );
+}
+```
+
+#### &&  
+
+```jsx
+expr1 && expr2 // expr1이 true값을 반환할 수 있으면 expr2를 반환하고, 그렇지 않으면 expr1을 반환합니다.
+true && expr // expr을 반환합니다.
+false && expr // false를 반환합니다.
+```
+
+#### ?
+
+```jsx
+(조건) ? expr1 : expr2
+
+function Check(props){
+//Check의 props를 변수에 저장합니다.
+  const data = parseInt(props.num);
+  return(
+    <div>
+      <h2>{data > 0 ? "양수입니다" : "양수가 아닙니다."}</h2>
+
+    </div>
+  )
+}
+```
+
+#### e.preventDefault()
+
+React에서 이벤트가 실행될 때, 페이지가 자동으로 새로고침 되는데 이를 방지하기 위해서임   
+
+```jsx
+//<a href ="#">는 링크를 설정하지 않은 상태이기 때문에 현재 페이지로 이동하여 새로고침 된다. 이를 방지하는 것이 e.preventDefault()
+<a href="#" onClick={handleClick}>
+    Click me
+</a>  
+
+function handleClick(e) {
+    e.preventDefault();
+    console.log('The link was clicked.');
+}
+```
+
+### 
+
+
+
+ github 블로그를 직접 같이 만들어 보는 시간을 정해보았습니다 **(시간 조정 투표중)**. 엘리스 2기 스터디 (LMS 시스템) -> 마이블로그 1팀에서 화면 공유를 하며 진행할 예정입니다.  
+
+몇 가지 세팅을 해주셔야 할 게 있습니다!  
+
+1. 기존에 github 계정에서 (.io) 레포지토리가 있는 분들은 미리 삭제를 해주시기 바랍니다.  
+
+2. https://gitforwindows.org/ 다음 사이트에서 git bash를 다운 받아주시기 바랍니다.(비쥬얼스튜디오에 있으시더라도 되도록 다운 부탁드립니다.)  
+
+3. https://remotedesktop.google.com/support/ 컴퓨터 원격 지원을 위해 이 링크에서 요청하는 확장프로그램을 설치 바랍니다.
+
+4. 맥 사용자 분의 경우 제가 도움을 드리기 힘듭니다 ㅠㅠ. 따라서 이 링크를 참고하셔서 만들어보시는 것이 더 도움이 될 것입니다.  
+
+   https://devinlife.com/howto%20github%20pages/github-prepare/
 
