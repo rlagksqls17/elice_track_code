@@ -599,7 +599,7 @@ import = as something from "패키지명"
 import "./App.css"  
 ```
 
- ### jsx  
+## jsx  
 
 특징 
 
@@ -607,7 +607,7 @@ HTML 태그 내에 Javascript 연산
 
 class = 대신 className = 
 
-#### 중괄호 ({})
+### 중괄호 ({})
 
 jsx 중괄호 안에는 여러 **자바스크립트 표현식**을 사용 가능  
 
@@ -616,7 +616,7 @@ const expression = 3*5
 const element = <h1>3*5= {expression}</h1>;
 ```
 
-#### **스타일은 object로 {{ }}**  
+###  **스타일은 object로 {{ }}**  
 
 ```jsx
 //HTML의 인라인 스타일은 ""(큰따옴표)로 감싼 string으로 정의하지만 React에서는 {}(중괄호)로 감싼 object로 정의합니다.  
@@ -660,7 +660,7 @@ const element = React.createElement(
 
 닫는 태그 필수 />
 
-#### **최상단 element는 반드시 하나**   
+###  **최상단 element는 반드시 하나**   
 
 ```jsx
 // 함수
@@ -682,51 +682,15 @@ const element = (
 );
 ```
 
-### Component   
+## Component   
 
-1. React에서 페이지를 구성하는 최소단위 
+: React에서 페이지를 구성하는 최소단위 
 
-```jsx
-const MyComponent = {{ children }} => {
-    return <div style = {{
-            padding: 20,
-            color: "blue"
-        }}>
-    {children}
-    </div>;
-}
+: Component의 이름은 대문자로 시작 
 
-// 컴포넌트 사용  
-const App = () => {
-    return {
-        <div>
-        <p>안녕</p>
-        <MyComponent>반가워</MyComponent>
-        <div>바이바이</div>
-        </div>
-    };
-}
-```
-
-2. Component의 이름은 대문자로 시작 
-
-3. Class Component/Function Component로 나뉨 
+### 1. Class Component
 
 ```jsx
-// Function Component => 주로 사용
-// 화살표 함수  
-const Hello = (props) => {
-    const {name} = props
-    return <div>{name}님 안녕하세요.</div>
-}
-// 기본 함수  
-function Clock(props) {
-  return (
-    <div>
-      <h1>{props.date.toLocaleTimeString()}.</h1>
-    </div>
-  );
-}  
 // class Component
 // 만들 때는 React.Component를 상속받고 render() 메소드를 구현해야 함  
 class Clock extends React.Component {
@@ -740,9 +704,27 @@ class Clock extends React.Component {
 }
 ```
 
+### 2. Function Component
+
+```jsx
+// 화살표 함수  
+const Hello = (props) => {
+    const {name} = props
+    return <div>{name}님 안녕하세요.</div>
+}
+// 기본 함수  
+function Clock(props) {
+  return (
+    <div>
+      <h1>{props.date.toLocaleTimeString()}.</h1>
+    </div>
+  );
+}  
+```
+
 4. Controlled Component/Uncontrolled Component 
 
-#### 컴포넌트 합성  
+### 컴포넌트 합성  
 
 ```jsx
 class Elice extends React.Component {
@@ -766,7 +748,7 @@ class Question extends React.Component {
 ReactDOM.render(<Question />, document.getElementById('root'));
 ```
 
-#### props  
+## props  
 
 ```jsx
 const MyComponent = (props) => {
@@ -792,29 +774,11 @@ const Welcome = (props) => {
 }
 ```
 
-#### state  
+## state  
 
 컴포넌트 내에서 유동적으로 변할 수 있는 값을 저장
 
-```jsx
-// props 사용 시 코드
-function Clock(props) {
-  return (
-    <div>
-      <h1>{props.date.toLocaleTimeString()}.</h1>
-    </div>
-  );
-}
-
-function tick() {
-  ReactDOM.render(
-    <Clock date={new Date()} />,
-    document.getElementById('root')
-  );
-}
-
-setInterval(tick, 1000);
-```
+**1. Props와 state를 이용한 클래스 컴포넌트 지정**
 
 ```jsx
 class Clock extends React.Component {
@@ -841,39 +805,30 @@ ReactDOM.render(
 );
 ```
 
+**2. state와 event를 활용한 동적 렌더링**
+
 ```jsx
 import {useState} from 'react';
 
 function Example(){
-    // 초기값 0
-    const [count, setCount] = useState(0);
-     // state 변경시 리액트가 자동으로 렌더링 해줌
-    // set 함수를 씀으로써 리액트가 자동으로 알아차림
-    return (
+	const [inputValue, setInputValue] = 
+          useState("defaultValue");
+    const handleChange = (event) => {
+        setInputValue(event.target.value);
+    }
+    return(
     	<div>
-            <p>버튼을 {count}번 눌렀습니다.</p>
-            <button onClick={() => setCount(count + 1)}>
-                
-                
-            // 여러줄로 사용하려면 다음과 같이 이벤트 등록
-            setCount({current} => {
-                    return current + 1
-                })
-                클릭
-            </button>
+        	<input onChange = {handleChange}
+                defaultValue = {inputValue}>
+            </input>
+            입력값 : {inputValue}
         </div>
-    );
+    )
+    
 }
-// 또는
-  return (
-    <div className="App">
-        <span>{count}회 클릭하였습니다.</span>
-        <button onClick={() => {
-            setCount(count+1);
-        }}>클릭</button>
-    </div>
-  );
 ```
+
+**3. object를 이용한 State**  
 
 ```jsx
 // 오브젝트를 갖는 State를 만들 때 주의사항  
@@ -890,11 +845,7 @@ const [user, setUser] =
     })	
 ```
 
-
-
-**setState()**  
-
-State를 변경하기 위해서는 직접 값을 수정하는 것이 아니라 setState() 메소드를 이용해야 함  
+**4. 일반 인수를 이용한 State**
 
 ```jsx
 // onClickEventHandler() 메소드가 호출되면 State의 name 데이터가 "엘리스 토끼"로 변경됨
@@ -905,13 +856,44 @@ onClickEventHandler = () => {
 };
 ```
 
+**5. object+ state + event**  
+
+```jsx
+const App = () => {
+    const [user, setUser] = useState({ 
+    	name: "민수",
+        school: "엘리스대학교"
+    });
+    
+    const handleChange = (event) => {
+        const {name, value} = event.target;
+        const newUser = {...user};
+        newUser[name] = value;
+        setUser(newUser);
+    };
+    
+    return(
+    	<div>
+        	<input name = "name" 
+                onChange = {handleChange}
+                value = {user.name}>
+            </input>
+            <input name = "school"
+                onChange = {handleChange}
+                value = {user.school}>
+            </input>
+        </div>
+    )
+}
+```
 
 
-### Element
+
+## Element
 
 엘리멘트란 React 앱의 가장 작은 단위를 말함  
 
-#### Render 와 ReactDOM
+### Render 와 ReactDOM
 
 ```jsx
 // App.js
@@ -1056,7 +1038,7 @@ setInterval(tick, 1000);
 serviceWorker.unregister();
 ```
 
-### 이벤트  
+## 이벤트  
 
 1.리액트에서 이벤트의 이름은 카멜(Camel) 표기법으로 사용  
 
@@ -1091,11 +1073,14 @@ render() {
 }
 ```
 
-#### 이벤트 등록
+### 이벤트 등록
+
+**1. 함수형 컴포넌트에 이벤트 정의**  
+
+예제코드 1 : onClick
 
 ```jsx
-// 함수형 컴포넌트에 이벤트 정의
-function ActionLink(){
+function ActionLink(){ // 컴포넌트
 	// 등록 부분
     function handleClick(e){
         console.log('The link was clicked');
@@ -1107,8 +1092,28 @@ function ActionLink(){
 	</a>
 		);
 }
+```
 
-// 클래스형 컴포넌트에 이벤트 정의 (props 포함)
+예제코드 2: onChange, event.target.value 
+
+```jsx
+const App =() =>{
+    const handleChange = (event) =>{
+        console.log(event.target.value + "라고 입력")
+    }
+	return (
+		<div>
+    		<input onChange = {handleChange} />
+    	</div>
+		)
+}
+```
+
+
+
+**2. 클래스형 컴포넌트에 이벤트 정의 (props 포함)**  
+
+```jsx
 class Header extends React.Component {
   constructor(props) {
     super(props);
@@ -1129,8 +1134,11 @@ class Header extends React.Component {
     );
   }
 }
+```
 
-// 클래스인데 props 따로 지정 안할 시 **유용한 코드**  
+**3. 클래스인데 props 따로 지정 안할 시 유용한 코드** 
+
+```jsx
 import React from "react";
 
 export default class Example2 extends React.Component {
@@ -1155,11 +1163,10 @@ export default class Example2 extends React.Component {
 }
 ```
 
-#### 이벤트 핸들링 하기  
+**4. 함수 안에 이벤트 등록**
 
 ```jsx
-// 1. 함수로 작성하여 핸들링 하기   
-<button onClick={
+ <button onClick={
         () => {
             alert(this.state.message)
             this.setState({
@@ -1168,22 +1175,9 @@ export default class Example2 extends React.Component {
         }
     }>
 </button>
-// 2. 함수 미리 작성 후, 핸들링  
-constrcutor(props){
-    super(props);
-    // 바인딩 : 해당 함수를 인지시켜줌
-    this.handleClick = this.handleClick.bind(this);
-}
-
-handleClick(){
-    console.log("message == ",this.state.message);
-    this.setState({
-            message : ''
-    })
-}
 ```
 
-#### 이벤트 핸들러에 인수 전달하기  
+### 인수 전달후 이벤트 등록
 
 ```jsx
 // id 값을 추가 인수로 전달해야 하는 경우  
@@ -1201,7 +1195,7 @@ class EventClass extends React.Component {
   }
 
   //handleClick 이벤트를 정의합니다. 인자값을 받아 alert()을 출력합니다.
-  handleClick = (data) => {
+  const handleClick = (data) => {
     alert(`전달받은 인자값: ${data}`)
   }
 
@@ -1218,7 +1212,40 @@ class EventClass extends React.Component {
 }
 ```
 
-#### 조건부 렌더링  
+### 상위 컴포넌트에 이벤트 등록  
+
+```jsx
+// props로 onchange 함수 등록  
+const MyForm = ({ onChange }) => {
+    return(
+    	<div>
+        	<span>이름: </span>
+            <input onChange={onChange} />
+        </div>
+    )
+}
+
+// 상속 주는 컴포넌트  
+// props도 가능 
+const App = () => {
+    const [username, setUsername] = useState('')
+    return (
+    	<div>
+        	<h1>
+            	{username}님 환영합니다.
+            </h1>
+            <MyForm 
+                onChange = {(event) => {
+                    setUsername(event.target.value)
+                }} />
+        </div>
+    )
+}
+```
+
+
+
+## 조건부 렌더링  
 
 ```jsx
 // 1

@@ -69,6 +69,14 @@ member_list = 모델이름.query.filter((Member.name == key1) & (Member.age==key
 
 # or 선택  
 member_list = 모델이름.query.filter((Member.name == key1) | (Member.age==key2)).all()
+
+# 정렬  
+    if q == '1':
+        # 오름차순 정렬
+        data = User.query.order_by(User.age.asc()).all()
+    else:
+        # 내림차순 정렬
+        data = User.query.order_by(User.age.desc()).all()
 ```
 
 ### 삽입  
@@ -211,6 +219,7 @@ netflix = col.find({"_id" : ObjectId(show_id)})[0]
 
 ```python
 # 라이브러리 사용
+# app.py
 from flask import Flask
 
 # flask 모듈 실행  
@@ -341,5 +350,224 @@ pw_hash = bcrypt.generate_passwrod_hash(user_pw)
 
 # 비밀번호와 입력받은 비밀번호가 같은지 확인
 bcrypt.check_password_hash(user.user_pw, user_pw)
+```
+
+### blueprint
+
+```python
+# app.py
+from flask import Flask
+from api import bp
+
+app = Flask(__name__)
+app.register_blueprint(bp)
+
+# api.py
+from flask import Blueprint
+
+bp = Blueprint('main', __name__)
+
+	# 작성한 게시글을 볼 수 있도록 함수를 완성하세요.
+@board.route("/post",methods=["POST"])
+def create_post():
+    content = request.form['content']
+    return jsonify({'result':'success'})
+```
+
+### request  
+
+```python
+from flask import request
+
+@friends.route("/friends/age")
+def friends_age():
+    # friends/age?flag=1로 접근 가능
+    q = request.args.get("flag")
+```
+
+## 로그인 코드 예제  
+
+```python
+# api.py
+from flask import redirect, request, render_template, jsonify, Blueprint, session, g
+from models import User
+from db_connect import db
+from flask_bcrypt import Bcrypt
+
+board = Blueprint('board',__name__)
+bcrypt = Bcrypt()
+
+
+@board.before_app_request
+def load_logged_in_user():
+    user_id = session.get('login')
+    if user_id is None:
+        g.user = None
+    else:
+        g.user = db.session.query(User).filter(User.id == user_id).first()
+
+
+@board.route("/",methods=['GET'])
+def home():
+    return render_template("base.html")
+
+@board.route("/join",methods=["GET","POST"])
+# 1. 회원가입
+def join():
+    if request.method == 'GET':
+        return render_template('join.html')
+    else:
+        # 아이디와 비밀번호를 받아옴
+        user_id = request.form['user_id']
+        user_pw = request.form['user_pw']
+        pw_hash = bcrypt.generate_password_hash(user_pw)
+
+        user_info = User.query.filter(User.user_id == user_id).first()
+        # Ajax에 결과값을 넘겨줌
+        if user_info:
+            return jsonify({"result" : "id_check"})
+
+        if len(user_pw) < 6:
+            return jsonify({"result" : "pw_check"})
+
+
+		# 모델을 세션(쿠키 데이터와 비슷)에 추가 (db.session)
+        user = User(user_id, pw_hash)
+        db.session.add(user)
+        db.session.commit()
+        
+        
+        
+        return jsonify({"result":"success"})
+
+# 2. 로그인
+@board.route("/login", methods=['GET','POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    else:
+        user_id = request.form['user_id']
+        user_pw = request.form['user_pw']
+        # id를 User 모델에서 걸러옴
+        user = User.query.filter(User.user_id == user_id).first()
+        # 결과를 Ajax로 넘겨줌
+        if user is not None:
+            if bcrypt.check_password_hash(user.user_pw, user_pw):
+                # session의 로그인 영역에 id 넘겨줌
+                session['login'] = user.id
+                return jsonify({"result": "success"})
+            else:
+                return jsonify({"result": "fail"})
+        else:
+            return jsonify({"result": "fail"})
+
+@board.route("/logout")
+def logout():
+    session['login'] = None
+    return redirect('/')
+```
+
+```jsx
+<script>
+    function regist() {
+        let user_id = $("#userId").val()
+        let user_pw = $("#userPw").val()
+        let user_pw2 = $("#userPw2").val()
+
+        if (user_id == '' || user_pw == '') {
+            alert("아이디와 패스워드를 입력해 주세요");
+            return;
+        }
+
+        if (user_pw != user_pw2) {
+            alert("비밀번호를 확인해 주세요!")
+            return;
+        }
+        /* 지시사항 2번을 참고하여 코드를 작성하세요. */
+        $.ajax({
+            url: '/join',
+            type: 'post',
+            data: {
+                'user_id': user_id,
+                'user_pw': user_pw
+            },
+            success: function (res) {
+                if (res['result'] == 'id_check'){
+                    alert("이미 존재하는 ID입니다.")
+                }
+                // response 값에 따라 출력값이 달라짐
+                else if (res['result'] == 'pw_check'){
+                    alert("비밀번호를 6자리 이상 입력하세요.")    
+                }
+                if (res['result'] == 'success') {
+                    alert("회원가입 성공!");
+                    window.location.href = '/';
+                }
+            }
+        })
+    }
+```
+
+### JWT  
+
+jwt는 서버와 클라이언트의 각각의 역할에 집중할 수 있는 매개체  
+
+세션 관리를 하지 않고 JWT로 인증을 수행하므로 더는 인증을 위한 세션을 관리하면서 서버의 리소스를 낭비하지 않아도 됨
+
+```python
+from flask import Flask, request, render_template, jsonify
+# jwt 모듈을 import하세요.
+import jwt
+
+app = Flask(__name__)
+encryption_secret = "secret_elice"
+algorithm = "HS256"
+
+origin = {"name":"elice", "password":"elice@1234"}
+
+
+@app.route("/", methods=["GET","POST"])
+def jwt_route():
+    # 조건문을 이용해 API 요청을 구분하세요.
+    if request.method == 'GET':
+        return render_template("index.html")    
+    # 아니면 포스트
+        # index.html에서는 ID와 PW를 각각 username과 password라는 변수에 담아 POST 방식으로 보냅니다. 
+        # 작성된 API에서 POST로 보낸 변수들을 각각 id, pw 변수에 저장하세요.
+    username = request.form['username']
+    password = request.form['password']
+        # 토큰 발급 전, 서버에 저장되어있는 아이디와 패스워드의 값과 일치 하는지 확인하세요. 
+        # 저장된 유저의 정보와 입력된 정보가 일치한다면 5번~7번까지의 과정을 작성하고, 
+        # 일치하지 않는다면 화면에 return jsonify("User Not Found")를 출력하세요.
+    if origin['name'] != username or origin['password'] != password:
+        return jsonify("User Not Found")
+            # 정보가 일치하는 경우 사용자 변수를 만들기 위한 dictionary를 선언하세요.
+    data_to_encode = {"name" : username, "password" : password}
+            # 인증이 완료되면 전송할 encode, decode 정보를 저장하세요.
+    encoded = jwt.encode(data_to_encode, encryption_secret, algorithm=algorithm)
+            # 저장한 정보를 json 형태로 전송하세요.
+    print(encoded)
+    encoded = encoded.decode()
+    print(encoded)
+    decoded = jwt.decode(encoded, encryption_secret, algorithms=[algorithm])
+        # 정보가 일치하지 않는 경우 "User Not Found"를 화면에 출력하세요.
+    data = {"encoded" : encoded, "decoded" : decoded}
+
+    return jsonify(data)
+    
+    
+    
+if __name__ == "__main__":
+    app.run(debug = True)
+
+    # decode는 byte를 받는게 아니라 문자열을 받는다...?
+    # 그냥 돌리면 byte를 안 받으니까 에러가 나고,
+    # 따라서 byte를 문자열로 바꾸기 위해 .decode()를 쓴다
+    # 즉, jwt.decode와 byte.decode는 역할이 완전히 다르다!
+    # jwt decode : 문자열 형식의 JWT -> JSON (딕셔너리)
+    # byte decode : byte -> 문자열
+
+if __name__ == "__main__":
+    app.run(debug = True, port=1234)
 ```
 
