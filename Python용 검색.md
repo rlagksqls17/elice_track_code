@@ -1,3 +1,22 @@
+
+
+# Math
+
+## sqrt
+
+```python
+import math
+
+xa = 0
+ya = 0
+xb = 2
+yb = 2
+
+math.sqrt(((xb - xa) ** 2) + ((yb - ya) ** 2))
+```
+
+
+
 # jsonify  
 
 ```python
@@ -254,6 +273,23 @@ from flask import request
 data = {
     "show_id": request.form['show_id'] # name
 }
+
+## register.html  
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>HTML for python flask</title>
+</head>
+
+<body>
+    <form action = "" method="post">
+        <p>name : <input type="text" id = "username" name = "username"></p>
+        <p>password : <input type="password" id = "password" name = "password"></p>
+        <p>이름과 비밀번호를 입력하고 생성버튼을 누르세요.<br> <input type = "submit" value = "생성" onclick = "alert('생성 완료!')" /> </p>
+    </form>
+</body>
+</html>
 ```
 
 ### render  template, Jinja template
@@ -295,6 +331,32 @@ return redirect("이동할 URL")
 # id 변수 포함시켜 리다이렉트
 return redirect(f"/netflix/{_id}")
 ```
+
+### url_for  
+
+```python
+@app.route("/")
+def home():
+    if session.get('logged_in'): # true이면
+        return render_template('loggedin.html')
+    else: # false면
+        return render_template('index.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        name = request.form['username']
+        password = request.form['password']
+        try:
+            if name in userinfo:
+                # 비밀번호 검증 후 일치하는 경우 초기 페이지로 이동하세요.
+                if password in userinfo.values():
+                    session['logged_in'] = True
+                    # ***여기가 중요***  
+                    return redirect(url_for('home'))
+```
+
+
 
 ### ajax  
 
@@ -368,7 +430,7 @@ from flask import Blueprint
 bp = Blueprint('main', __name__)
 
 	# 작성한 게시글을 볼 수 있도록 함수를 완성하세요.
-@board.route("/post",methods=["POST"])
+@bp.route("/post",methods=["POST"])
 def create_post():
     content = request.form['content']
     return jsonify({'result':'success'})
