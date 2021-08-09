@@ -633,3 +633,6 @@ if __name__ == "__main__":
     app.run(debug = True, port=1234)
 ```
 
+### CORS  
+
+flask에서는 flask-cors를 import를 설치하고 CORS(app) 한 줄을 추가해주면 됨 (보안의 목적으로 다른 서버에서 우리 서버에 데이터를 요청하는 것을 막음)  

@@ -470,7 +470,9 @@ const App = () => {
 
 ## useCallback  
 
-함수를 메모이제이션하기 위해 사용하는 Hook이다. 컴포넌트가 재렌더링될 때 불필요하게 **함수가 다시 생성되는 것을 방지**한다.  
+함수를 메모이제이션하기 위해 사용하는 Hook이다. 컴포넌트가 재렌더링될 때 불필요하게 **함수가 다시 생성되는 것을 방지**한다. 
+
+**시간이 걸리는 Return**  
 
 ```jsx
 // 지속적으로 메모리를 쓰기 때문에 성능하락 이슈가 있을 수 있음
@@ -486,6 +488,90 @@ const App = () => {
     return <>{getFuallName()}</>
 }
 ```
+
+### Promise  
+
+resolve : 로직이 성공 시 실행하면 fulfilled(이행) 상태가 되게 해주는 callback함수임  
+
+reject : 로직이 실패하였을 때 실행하면 rejected 상태가 되게 해주는 callback 함수임
+
+```jsx
+function getUser(id) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      console.log("Reading from a database....");
+			if(id !== 1){
+				reject("User not found!");
+			}
+      resolve({ id: id, username : "test" });
+    }, 2000);
+  });
+}
+
+
+getUser(1)
+	.then((user)=>{
+		console.log(user);
+	})
+	.catch((e)=>{
+		console.error(e);
+	});
+```
+
+## Async/Await  
+
+es6에서 나온 개념  
+
+then을 통한 chaining 제거  
+
+promise 반환하는 함수 앞에 await을 명시  
+
+async함수는 항상 promise 함수 반환  
+
+```jsx
+// 제일 문제가 없음
+function getUser(id) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      console.log("Reading from a database....");
+			if(id !== 1){
+				reject("User not found!");
+			}
+      resolve({ id: id, username : "test" });
+    }, 2000);
+  });
+}
+
+function updateUser(username) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      console.log("Update User");
+			if(username !== "test"){
+	      reject(new Error("Error occured in repositories"));
+			}
+			resolve({id:1,username:"test2"});
+    }, 2000);
+  });
+}
+
+async function delayGetUser() {
+	try {
+		const user = await getUser(1);
+		const updatedUser = await updateUser(user.username);
+		console.log(updatedUser);
+		return updatedUser;
+	} catch(err){
+		console.log(`Error : ${err.message}`);
+	}
+}
+
+async function main(){
+	const user = await delayGetUser();
+	console.log(user);
+}
+```
+
+
 
 ## useRef  
 
@@ -665,6 +751,28 @@ setInterval(tick, 1000);
 
 serviceWorker.unregister();
 ```
+
+## axios  
+
+```jsx
+// 동기방식
+axios.get('request url')
+	.then(
+	(response) => {
+     	console.log("받아온 데이터", response.data)   
+    })
+
+// 비동기방식
+axios.get('request url', {post 요청에 보낼 객체})
+	.then(
+	(response) => {
+     console.log("받아온 데이터", response.data)   
+    })
+```
+
+
+
+
 
 ## 이벤트  
 
