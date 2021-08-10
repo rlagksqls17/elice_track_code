@@ -587,3 +587,245 @@ var o = {a: 37, f: f, g: g, h: h};
 console.log(o.a, o.f(), o.g(), o.h()); // 37, 37, azerty, azerty
 ```
 
+## 비동기  
+
+: 초기 웹 환경에서는 서버에서 모든 데이터를 로드하여 페이지를 빌드했으므로 자바스크립트에서는 별도의 비동기 처리가 필요하지 않음. Ajax 기술의 등장으로 **페이지 로드 없이** **client-side에서 서버로 요청을 보내 데이터를 처리**할 수 있게 됨. XMLHttpRequest라는 객체를 이용해 서버로 요청을 보낼 수 있게 됨. 자바스크립트는 single-thoreaded language이므로, 만일 서버 요청을 기다려야 한다면 유저는 멈춰있는 브라우저를 보게 될 것. 따라서 **동기가 아닌 비동기 처리를 이용해 서버로 통신할 필요가 있음**. 비동기 요청 후, main thread는 유저의 입력을 받거나 페이지를 그리는 등의 작업을 처리. 비동기 응답을 받으면 응답을 처리하는 callback 함수를 task queue에 넣고, event loop는 main thread에 여유가 있을 때 task queue에서 함수를 꺼내 실행  
+
+**동기** : 해당 코드블록을 실행할 때 스레드의 제어권을 넘기지 않고 **순서대로 실행**하는 것을 의미 **(Call stack에 넣어짐)**
+
+```js
+console.log("This is synchronus...")
+
+for (let i = 0; i < 1000000000; ++i){
+    console.log("I am blocking the main thread")
+}
+
+console.log("This is synchronus...DONE!")
+```
+
+**비동기** : 코드의 순서와 다르게 실행 됨, 가장 밑의 코드가 실행이 될 수도 있음, 비동기 처리 코드를 감싼 블록은 task queue에 넣어짐, main thread가 동기 코드를 실행한 후에 제어권이 돌아왔을 때 event loop가 task queue에 넣어진 비동기 코드를 실행 함 **(Task queue에 넣어짐)**
+
+```js
+setTimeout(() => console.log("This is asynchronus..."), 5000)  
+
+console.log("This is synchronous...")
+
+// 오랜시간 main thread가 실행되기 때문에 포문이 끝날때 까지 setTimeout()이 기다려지게 됨
+for (let i = 0; i < 1000000000; ++i){
+    console.log("I am blocking the main thread...")
+}
+```
+
+```js
+request("user-data", (userData) =>{
+    console.log("userData 로드")
+    saveUsers(userData)
+});
+
+console.log("DOM 변경")
+console.log("유저 입력")
+```
+
+**브라우저의 main thread는 자바스크립트 코드에서 동기적으로 처리되어야 할 코드 실행 외에도, 웹 페이지를 실시간으로 렌더링하고 유저의 입력을 감지하고, 네트워크 통신을 처리하는 등 수많은 일을 처리**
+
+비동기 작업을 할당하면, 비동기 처리가 끝나고 브라우저는 task queue에 실행 코드를 넣음. main thread는 event loop를 돌려 task queue에 작업이 있는지 체크하고 task 실행  
+
+![image-20210810151013455](C:\Users\joo\AppData\Roaming\Typora\typora-user-images\image-20210810151013455.png)
+
+### Callback patter n  
+
+비동기 처리 후 실행될 코드를 Callback function으로 보내는 것  
+
+비동기 처리가 고도화되면서 Callback hell 단점이 부각됨  
+
+```js
+function fetchUsers(onSuccess){
+    return request('/users', onSuccess)
+    .then(onSuccess)
+    // Error handling 
+    .catch(onError)
+    
+    // or
+    return request('/users').then(onSuccess, onError)
+}
+
+ 
+```
+
+
+
+### Promise  
+
+Promise를 활용하여 비동기 처리의 순서 조작, 에러 핸들링, 여러 비동기 요청 처리 등을 쉽게 처리할 수 있게 됨. **즉 하나의  deps로 처리**  
+
+**데이터가 떨어졌을 때 어떤 처리를 할 것인지 미리 약속하는 프록시(Proxy)** (.then, .catch, .finally 등)  [전체 정보](https://promisesaplus.com/)
+
+```js
+function fetchUsers(onSuccess){
+	return request('/users').then(onSuccess)
+}
+```
+
+```js
+function returnPromise() {
+    return new Promise((resolve, reject) => {
+    setTimeout(() => {
+         const randomNumber = generateRandomNumber(100)
+         if (randomNumber < 50) resolve(randomNumber)
+         else reject(new Error("Random number is too small."))
+    	})                    
+    })
+}
+
+returnPromise()
+  .then(num => {
+    console.log("First random number :", num)
+  })
+  .catch(error => {
+    console.log("Error occured: ", error)  
+  })
+  .finally(() => {
+    console.log("Promise returned.")
+  })
+```
+
+Promise 객체는 pending, fulfilled, rejected 3개의 상태를 가짐, **fulfilled, rejected 두 상태를 settled 라고 지칭**  
+
+**pending** : 비동기 실행이 끝나기를 기다리는 상태
+
+**fulfilled** : 비동기 실행이 성공한 상태
+
+**rejected** : 비동기 실행이 실패한 상태  
+
+#### Multiple Promise handling  
+
+Promise 객체는, settled 되더라고 계속 핸들러를 붙일 수 있음 (핸들러 순서대로 호출됨)
+
+**Promise all()** :모든 프로미스가 fulfilled 되길 기다림. 하나라도 에러 발생시, 모든 프로미스 요청이 중단됨  
+
+```js
+Promise.all(
+	users.map(user => request('/users/detail', user.name))
+    // [Promise, Promise, Promise ...]
+)
+
+.then(console.log) // [UserNameData, UserNameData, ...]
+.catch(e => console.error("하나라도 실패했습니다."))
+```
+
+**Promise.allSettled()** : 모든 프로미스가 settled 되길 기다림  
+
+```js
+// 재귀 함수임
+function saveLogRetry(logs, retryNum){
+    if (retryNum >= 3) return; //no more try
+    
+    Promise.allSettled(logs.map(saveLog))
+    	.then((results) => {
+          return results.filter((result) => 
+          	result.status === "rejected");
+    })
+    	.then((failedPromises) => {
+        saveLogRetry(
+        	failedPromises.map((promise) => promise.reason.failedLog),
+            
+          	retryNum + 1
+        )
+    })
+}
+```
+
+**Promise.race()** : 넘겨진 프로미스들 중 하나라도 settled되길 기다림  
+
+```js
+function requestWithTimeout(request, timeout = 1000){
+    return Promise.race([request, wait(timeout)]).then((data) => {
+        console.log("요청 성공.")
+    	return data;
+    })
+}
+
+requestWithTimeout(req)
+	.then(data => console.log("data : ", data))
+	.catch(() => console.log("타임아웃 에러!"))  
+```
+
+**Promise.any()** : 넘겨진 프로미스 중 하나라도 fulfilled 되길 기다림  
+
+```js
+function getAnyData(dataList){
+    Promise.any(dataList.map((data) => request(data.url)))
+      .then((data) =>{
+        console.log("가장 첫 번째로 가져온 데이터 : ", data);
+    })
+      .catch((e) => {
+        console.log("아무것도 가져오지 못했습니다.")
+    })
+}
+```
+
+## async/await  
+
+promise 체인을 구축하지 않고도, **Promise를 직관적으로 사용할 수 있는 문법**  
+
+async function을 만들고, Promise를 기다려야 하는 표현 앞에 await을 붙임  
+
+```js
+// async : 단일 await
+async function fetchUsers(){
+    try{
+        const users = await request('/users')
+        console.log("users fetched")
+        return users
+    } catch (e) {
+        console.log("error : ", e)
+    }
+}
+
+// Promise  
+function fetchUsers(){
+    return request('/users')
+    .then(users => console.log("users fetched."))
+    .catch(e => console.log("error : ", e))
+}
+
+// async : 여러 개의 await  
+async function fetchUserWithAddress(id){
+    try{
+        const user = await request(`/user/${user.id}`)
+        const address = await request(`/user/${user.id}/address`)
+        return {...user, address}
+    } catch (e) {
+        console.log("error : ", e)
+    }
+}
+
+// Error 통제  
+async function fetchUserWithAddress(id) {
+    try {
+        const user = await request(`/user/${user.id}`)
+        if (!user) throw new Erro("No user found.")
+        
+        const address = await request(`/user/${user.id}/address`)
+        if (!address.userId !== user.id) throw new Error("No address match with user.")
+        
+        return {...user, address}
+    } catch(e) {
+        console.log("user fetch error :", e)
+    }
+    }
+}
+
+// async/await - Promise와의 조합  
+async function fetchUserWithAddress(id){
+    return await Promise.all([
+        (async () => await request(`/users/${id}`))(),
+        (async () => await request(`/users/${id}/address`))(),
+    ])
+}
+
+fetchUserWithAddress('1234')
+.then(([user, address]) => ({...user, address}))
+.catch(e => console.log("Error :", e))
+```
+

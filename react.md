@@ -220,48 +220,6 @@ const Welcome = (props) => {
 }
 ```
 
-## state
-
-컴포넌트 내에서 유동적으로 변할 수 있는 값을 저장
-
-**1. Props와 state를 이용한 클래스 컴포넌트 지정**
-
-```jsx
-class Clock extends React.Component {
-  // props, this.state를 지정
-    // 불필요한 내부 데이터 은닉
-  constructor(props) {
-    super(props);
-    this.state = {date: new Date()};
-  }
-  // 기존 클래스 함수
-  render() {
-    return (
-      <div>
-        <h1>{this.state.date.toLocaleTimeString()}.</h1>
-      </div>
-    );
-  }
-}
-
-// 렌더링
-ReactDOM.render(
-  <Clock //원래 : date={new Date()} />,
-  document.getElementById('root')
-);
-```
-
-**2. 일반 인수를 이용한 State**
-
-```jsx
-// onClickEventHandler() 메소드가 호출되면 State의 name 데이터가 "엘리스 토끼"로 변경됨
-onClickEventHandler = () => {
-  this.setState({
-    name: "엘리스 토끼"
-  });
-};
-```
-
 
 
 ## Hook
@@ -372,6 +330,7 @@ const User = () => {
 
 ### Hook의 규칙  
 
+```html
 - 최상위에서만 Hook 호출    
 
 : 반복문, 조건문, 중첩함수 내에 Hook 호출 금지  
@@ -384,10 +343,148 @@ const User = () => {
 : 함수 컴포넌트에서만 Hook 호출  
 
 > Hook 호출 순서에 React가 의존함
+```
+
+### useState
+
+```html
+단순한 하나의 상태를 관리하기에 적합함  
+const [state, setState] = useState(initState | initFn)
+state가 바뀌면, state를 사용하는 컴포넌트를 리렌더함  
+useEffect와 함께 state에 반응하는 훅을 구축
+
+상위 컴포넌트에서 state와 state 변경 함수를 정의하고,  
+그 state나 변경 함수를 사용하는 컴포넌트까지 prop으로 내려주는 패턴  
+
+state가 변경되면, 중간에 state를 넘기기만 하는 컴포넌트들도 모두 리렌더링 됨  
+
+상태와 상태에 대한 변화가 단순하거나, 상대적으로 소규모 앱에서 사용하기 적합  
+```
 
 
 
-## Effect Hook  
+**1. Props와 state를 이용한 클래스 컴포넌트 지정**
+
+```jsx
+class Clock extends React.Component {
+  // props, this.state를 지정
+    // 불필요한 내부 데이터 은닉
+  constructor(props) {
+    super(props);
+    this.state = {date: new Date()};
+  }
+  // 기존 클래스 함수
+  render() {
+    return (
+      <div>
+        <h1>{this.state.date.toLocaleTimeString()}.</h1>
+      </div>
+    );
+  }
+}
+
+// 렌더링
+ReactDOM.render(
+  <Clock //원래 : date={new Date()} />,
+  document.getElementById('root')
+);
+```
+
+**2. 일반 인수를 이용한 State**
+
+```jsx
+// onClickEventHandler() 메소드가 호출되면 State의 name 데이터가 "엘리스 토끼"로 변경됨
+onClickEventHandler = () => {
+  this.setState({
+    name: "엘리스 토끼"
+  });
+};
+```
+
+### useRef  
+
+```html
+상태가 바뀌어도 리렌더링 하지 않는 상태를 정의함  
+
+즉, 상태가 UI의 변경과 관계없을 때 사용  
+ex) setTimeout의 timerId 저장  
+
+uncontrolled component의 상태를 조작하는 등, 리렌더링을 최소화하는 상태 관리에 사용됨  
+ex) Dynamic Form 예시
+```
+
+### useContext  
+
+```jsx
+컴포넌트와 컴포넌트 간 상태를 공유할 때 사용 
+
+부분적인 컴포넌트들의 상태 관리, 전체 앱의 상태 관리를 모두 구현  
+
+Context Provider 안에서 랜더링 되는 컴포넌트는 useContext를 이용해 깊이 nested 된 컴포넌트라도 바로 context value를 가져옴  
+
+context value가 바뀌면 내부 컴포넌트는 모두 리렌더링 됨  
+
+Provider 단에서 상태를 정의하고, 직접 상태와 변경 함수를 사용하는 컴포넌트에서 useContext를 이용해 바로 상태를 가져와 사용하는 패턴  
+
+useReducer와 함께, 복잡한 상태와 상태에 대한 변경 로직을 두 개 이상의 컴포넌트에서 활용하도록 구현 가능  
+
+const TodoContext = createContext(null);
+
+const initialState = {
+    todos: [],
+    filter: "all",
+    globalId: 3000,
+};
+
+function useTodoContext(){
+    const context = useContext(TodoContext);
+    if (!context){
+        throw new Error("rolem");
+    }
+    return context;
+}
+
+function TodoContextProvider({ children }){
+    const values = useTodoState();
+    return <TodoContextProvider
+               value = {values}>
+    	{children}
+    </TodoContextProvider>
+}
+
+function reducer(state, action){
+    switch (action.type){
+        case "change.filter":
+            return {...state, filter:
+                   action.payload.filter};
+        case "init.todos":
+            return {...state, todos:
+                   action.payload.todos};
+        case "add.todo" : 
+            return {...state, todos: [{title:
+                action.payload.title, id: state.globalId + 1}]
+        }
+    }
+}
+```
+
+### useReducer
+
+```js
+useState 보다 복잡한 상태를 다룰 때 사용
+
+별도의 라이브러리 없이 flux pattern에 기반한 상태 관리를 구현  
+
+const [state, dispatch] = useReducer(reducer, initState)
+
+nested state등 복잡한 여러 개의 상태를 한꺼번에 관리하거나 어떤 상태에 여러 가지 처리를 적용할 때 유용  
+
+상태가 복잡하다면, useState에 관한 callback을 내려주는 것보다 dispatch를 prop으로 내려 리렌더링을 최적화하는 것을 권장
+```
+
+
+
+### Effect Hook  
 
 함수형 컴포넌트에서 side effects들을 실행하는 것  
 
@@ -449,7 +546,7 @@ const Example = () => {
 }
 ```
 
-## useMemo  
+#### useMemo  
 
 지정한 State나 Props가 변경될 경우 해당 값을 활용해 계산된 값을 메모이제이션 하여 제 랜더링 시 불필요한 연산을 줄임
 
@@ -468,7 +565,7 @@ const App = () => {
 
 ```
 
-## useCallback  
+#### useCallback  
 
 함수를 메모이제이션하기 위해 사용하는 Hook이다. 컴포넌트가 재렌더링될 때 불필요하게 **함수가 다시 생성되는 것을 방지**한다. 
 
@@ -489,7 +586,7 @@ const App = () => {
 }
 ```
 
-### Promise  
+##### Promise  
 
 resolve : 로직이 성공 시 실행하면 fulfilled(이행) 상태가 되게 해주는 callback함수임  
 
@@ -1129,7 +1226,7 @@ function handleClick(e) {
 }
 ```
 
-## 기타  
+# 백엔드  
 
 ### form과 props 이용한 등록과 초기화 구현
 
@@ -1292,7 +1389,12 @@ export default InsertForm;
 
 ### SPA  
 
+```
+**브라우저에서 빌드함**
+
 하나의 페이지 요청으로 전체 웹앱을 사용하는 방식  
+
+자체적으로 데이터를 갖고, 서버와의 동기화가 필요한 데이터만을 처리
 
 SPA는 서버에 매번 요청을 하지 않고, 단 한 번만 페이지를 받아 페이지 관련 네트워크 요청이 줄어든다.
 
@@ -1301,10 +1403,18 @@ SPA는 단 하나의 페이지를 관리하며, 모든 라우트에서 해당 �
 SPA는 모바일 앱을 사용하는 듯한 경험을 주기 위해 자바스크립트와 History API 등의 Web API를 이용, 페이지 리로드 없는 네비게이션을 구현한다.
 
 SPA는 페이지 요청 시 주로 빈 페이지를 전송하므로, 서버에서 모든 페이지 정보를 렌더링하는 방식의 MPA보다는 Search Engine Optimization에 불리하다.
+```
 
 ### MPA 
 
+```html
+**서버에서 빌드함**
+
 서버에 미리 여러 페이지를 두고 유저가 네비게이션 시 요청에 적합한 페이지를 전달
+MPA에서는 서버의 데이터를 이용해 패이지를 렌더링하므로, 클라이언트의 데이터와 서버의 데이터가 큰 차이를 가지지 않음
+```
+
+
 
 ### react-router  
 
@@ -1436,4 +1546,1086 @@ function ContactPage(){
     
 */
 ```
+
+
+
+## 예제 코드
+
+### 유저 데이터를 비동기로 요청해 렌더링하기
+
+```jsx
+// BitcoinApp.jsx  
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import UserDetail from "./UserDetail";
+// auth.js 파일에서 모든 코드를 import  
+import * as authAPI from '../service/auth'
+
+// style을 위한 컴포넌트
+const WrappedUserDetail = styled(UserDetail)`
+  & + & {
+    margin-top: 12px;
+  }
+`;
+
+// 유저 정보를 받아온 정보를 UserDetail에 넘겨 화면에 출력하세요.
+// 데이터가 로딩 중인 경우 유저 정보를 불러오고 있다는 안내문을 띄웁니다.
+export default function BitcoinApp() {
+    // State 설정 
+  const [ users, setUsers ] = useState(undefined)
+    // 컴포넌트 생성 시에 authoAPI.getUsers()에서 데이터를 불러옴
+  useEffect(() => {
+    authAPI
+        .getUsers()
+      // 성공시 users 상태를 불러온 데이터로 변경함
+        .then(setUsers)
+  }, [])
+  
+  return (
+    <div>
+        {!users ? (
+            <div>유저 정보를 로딩중입니다.</div>
+        ) : users.map(user => (        
+              // 받아온 데이터가 배열이므로, 배열 별 map으로 html코드써서 출력해줌
+        <WrappedUserDetail 
+            email={user.email}
+            bitcoinAddress={user.bitcoinAddress}
+            bitcoinBalance={user.bitcoinBalance}
+        />
+        ))
+        }
+    </div>
+  );
+}
+
+// UserDetail.jsx
+import React from "react";
+import styled from "styled-components";
+import { colors } from "../style/colors";
+
+export default function UserDetail({
+  email,
+  bitcoinAddress,
+  bitcoinBalance,
+  className,
+}) {
+  return (
+    <Container className={className}>
+      <Email>
+        <h4>Email</h4>
+        <span>{email}</span>
+      </Email>
+
+      <Bitcoin>
+        <div>
+          <strong className="title">Bitcoin Address</strong>
+          <span className="content">{bitcoinAddress}</span>
+        </div>
+
+        <div>
+          <strong className="title">Bitcoin Balance</strong>
+          <span className="content">{bitcoinBalance} BTC</span>
+        </div>
+      </Bitcoin>
+    </Container>
+  );
+}
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  background: ${colors.pink0};
+
+  width: 500px;
+  padding: 24px;
+
+  border-radius: 10px;
+`;
+
+const Email = styled.div`
+    display: flex;
+    
+    h4 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: bold;
+        width: 120px;
+    }
+    
+    span {
+        font-size: 14px;
+        align-self: flex-end;
+    }
+`;
+
+const Bitcoin = styled.div`
+    .title{
+        width: 120px;
+        diplay: inline-block;
+        
+        font-size: 14px;
+    }
+    .content{
+        font-size: 12px;
+    }
+`;
+
+// App.js
+import React from 'react';
+import "./App.css";
+import BitcoinApp from "./BitcoinApp/BitcoinApp";
+import styled from "styled-components";
+
+const Container = styled.div`
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+function App() {
+  return (
+    <Container>
+      <BitcoinApp />
+    </Container>
+  );
+}
+
+export default App;
+
+// auth.js  
+import { db } from "./db";
+	// bitcoinApp.jsx에서 요청하는 getUsers는 db.getUsers()함수를 불러옴
+export const getUsers = () => db.getUsers();
+
+export const loginUser = ({ email, password }) => db.findUser(email, password);
+
+export const registerUser = ({ email, password }) =>
+  db.addUser(email, password);
+
+// db.js
+const delayedResolve = (data) =>
+  new Promise((resolve, reject) => setTimeout(() => resolve(data), 250));
+
+const bitcoinAddressBuilder = (() => {
+  const possibleCharacters =
+    "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+  const generateRandomNumber = (max, min = 0) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
+  // P2PKH invoice address format
+  const generateBitcoinAddress = () => {
+    const selectionLength = possibleCharacters.length - 1;
+    const addressLength = generateRandomNumber(34, 25);
+
+    const generatedAddress = "1".concat(
+      Array.from({ length: addressLength })
+        .map(() => possibleCharacters[generateRandomNumber(selectionLength)])
+        .join("")
+    );
+
+    return {
+      bitcoinAddress: generatedAddress,
+      bitcoinBalance: 100 + +(Math.random() * 100).toFixed(2),
+    };
+  };
+
+  return {
+    generateBitcoinAddress,
+  };
+})();
+
+const users = [
+  {
+    email: "test1@example.com",
+    password: "1234",
+    bitcoinAddress: "1MsYFA2HyCiTQ1X2vPByirQo3i7HQ9yNvb",
+    bitcoinBalance: 174.13,
+  },
+
+  {
+    email: "tamara26@yahoo.com",
+    password: "tamara",
+    bitcoinAddress: "1c9y8xHAGc1CjFfX3eW5V85M9sJax6o",
+    bitcoinBalance: 361.54,
+  },
+
+  {
+    email: "antone87@gmail.com",
+    password: "antone",
+    bitcoinAddress: "1cKP3SVjSFwbGDYwJgeqfB4gYMEw",
+    bitcoinBalance: 153.24,
+  },
+];
+
+export const db = (() => { // db.getUsers
+  const getUsers = () =>
+  // map을 실행해서 users 정보들을 객체화 시킴
+  // 비밀번호와 나머지들 중 나머지만 불러온다는 뜻
+    delayedResolve(users.map(({ password, ...rest }) => rest));
+
+  const addUser = (email, password) => {
+    const foundUser = users.find((user) => user.email === email);
+
+    if (foundUser) {
+      throw new Error("Email already exists.");
+    }
+
+    const newUser = {
+      email,
+      password,
+      ...bitcoinAddressBuilder.generateBitcoinAddress(),
+    };
+
+    users.push(newUser);
+
+    return delayedResolve(newUser);
+  };
+
+  const findUser = (email, password) => {
+    const foundUser = users.find((user) => user.email === email);
+
+    if (!foundUser) {
+      throw new Error("User not found");
+    }
+
+    if (foundUser.password !== password) {
+      throw new Error("Password not matched.");
+    }
+
+    return delayedResolve(foundUser);
+  };
+
+  return {
+    getUsers,
+    addUser,
+    findUser,
+  };
+})();
+
+```
+
+### 유저 등록하기  
+
+```jsx
+// BitcoinApp.js  
+import React, { useState, useEffect } from "react";
+import * as authAPI from "../service/auth";
+import styled from "styled-components";
+import UserDetail from "./UserDetail";
+// RegisterForm을 불러옴
+import RegisterForm from './RegisterForm'
+
+// RegisterForm을 이용해 유저 정보를 가져와 화면을 업데이트하세요.
+const WrappedUserDetail = styled(UserDetail)`
+  & + & {
+    margin-top: 12px;
+  }
+`;
+
+export default function BitcoinApp() {
+  const [users, setUsers] = useState(undefined);
+  
+  const handleSubmit = (formData) => {
+    authAPI
+    // db.addUser 실행 : 중복이 되어 있지 않으면 newUser 객체 만들어서 기존 유저에 push
+        .registerUser(formData)
+    // 성공하면 getUsers를 실행해서 map으로 필요한 정보만 뽑아오고
+        .then(authAPI.getUsers)
+    // users 상태 변경
+        .then(setUsers)
+    // 에러는 따로 잡음  
+        .catch(console.error)
+  }
+
+  useEffect(() => {
+    authAPI.getUsers().then((data) => {
+      console.log(data);
+      setUsers(data);
+    });
+  }, []);
+
+  if (!users) {
+    return <div>유저 정보를 불러오는 중입니다...</div>;
+  }
+
+  return (
+    <div>
+         // RegisterForm을 불러오고, props로 onSubmit을 넘겨줌
+        <RegisterForm onSubmit={handleSubmit}/>
+      {users.map((user) => (
+        <WrappedUserDetail {...user} />
+      ))}
+    </div>
+  );
+}
+
+// RegisterForm.jsx  
+import React, { useRef } from "react";
+import styled from "styled-components";
+
+export default function RegisterForm({ className, onSubmit }) {
+  const formRef = useRef();
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const confirmPasswordRef = useRef();
+
+  const submitForm = (e) => {
+    e.preventDefault();
+// 받아온 값을 저장함
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+    const confirmPassword = confirmPasswordRef.current.value;
+// 받아온 값의 문자 길이, 패스워드 동일 입력 여부를 확인함
+    if (email.length === 0 || password.length === 0) {
+      return;
+    }
+
+    if (confirmPassword !== password) {
+      confirmPasswordRef.current.setCustomValidity("Different from password");
+      return;
+    }
+
+    const formData = {
+      email,
+      password,
+    };
+// 또한 제출버튼 클릭시 props로 받아온 onSUbmit함수에 formData를 매개변수로 전달하여 실행
+// formRef를 리셋함
+    onSubmit(formData);
+    formRef.current.reset();
+  };
+
+  return (
+      // form 형식으로 email. password, confirmpassword를 받음
+    <Container className={className}>
+      <form ref={formRef}>
+        <fieldset>
+          <label htmlFor="email">Email</label>
+          <input
+            placeholder="Enter email."
+            required
+            ref={emailRef}
+            id="email"
+            type="email"
+            name="email"
+            autocomplete="off"
+          />
+        </fieldset>
+
+        <fieldset>
+          <label htmlFor="password">Password</label>
+          <input
+            required
+            ref={passwordRef}
+            id="password"
+            type="password"
+            name="password"
+            placeholder="Enter password."
+          />
+        </fieldset>
+
+        <fieldset>
+          <label htmlFor="confirmPassword">Confirm Password</label>
+          <input
+            required
+            ref={confirmPasswordRef}
+            id="confirmPassword"
+            type="password"
+            name="confirmPassword"
+            placeholder="Enter password again."
+          />
+        </fieldset>
+        <RegisterButton onClick={submitForm}>Register</RegisterButton>
+      </form>
+    </Container>
+  );
+}
+
+const Container = styled.div`
+  fieldset {
+    margin: 0;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  label {
+    margin-right: 4px;
+  }
+
+  input[type="password"]:invalid,
+  input[type="email"]:invalid {
+    border: 1px solid red;
+  }
+
+  input[type="password"]:valid,
+  input[type="email"]:valid {
+    border: 1px solid green;
+  }
+
+  form:invalid {
+    border: 5px solid #ffdddd;
+  }
+`;
+
+const RegisterButton = styled.button.attrs({ type: "submit" })`
+  width: 100%;
+  height: 40px;
+`;
+
+
+// App.js  
+import React from 'react';
+import "./App.css";
+import BitcoinApp from "./BitcoinApp/BitcoinApp";
+import styled from "styled-components";
+
+const Container = styled.div`
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+function App() {
+  return (
+    <Container>
+      <BitcoinApp />
+    </Container>
+  );
+}
+
+export default App;
+
+```
+
+### 등록 페이지, 유저 목록 페이지 추가하기
+
+```jsx
+// App.js  
+import React from 'react';
+import "./App.css";
+import BitcoinApp from "./BitcoinApp/BitcoinApp";
+import styled from "styled-components";
+
+const Container = styled.div`
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+function App() {
+  return (
+    <Container>
+          // BitcoinApp 컴포넌트를 불러옴  
+      <BitcoinApp />
+    </Container>
+  );
+}
+
+export default App;
+
+// auth.js
+import { db } from "./db";
+
+export const getUsers = () => db.getUsers();
+
+export const loginUser = ({ email, password }) => db.findUser(email, password);
+
+export const registerUser = ({ email, password }) =>
+  db.addUser(email, password);
+// db.js  
+const delayedResolve = (data) =>
+  new Promise((resolve, reject) => setTimeout(() => resolve(data), 250));
+
+const bitcoinAddressBuilder = (() => {
+  const possibleCharacters =
+    "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+  const generateRandomNumber = (max, min = 0) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
+  // P2PKH invoice address format
+  const generateBitcoinAddress = () => {
+    const selectionLength = possibleCharacters.length - 1;
+    const addressLength = generateRandomNumber(34, 25);
+
+    const generatedAddress = "1".concat(
+      Array.from({ length: addressLength })
+        .map(() => possibleCharacters[generateRandomNumber(selectionLength)])
+        .join("")
+    );
+
+    return {
+      bitcoinAddress: generatedAddress,
+      bitcoinBalance: 100 + +(Math.random() * 100).toFixed(2),
+    };
+  };
+
+  return {
+    generateBitcoinAddress,
+  };
+})();
+
+const users = [
+  {
+    email: "test1@example.com",
+    password: "1234",
+    bitcoinAddress: "1MsYFA2HyCiTQ1X2vPByirQo3i7HQ9yNvb",
+    bitcoinBalance: 174.13,
+  },
+
+  {
+    email: "tamara26@yahoo.com",
+    password: "tamara",
+    bitcoinAddress: "1c9y8xHAGc1CjFfX3eW5V85M9sJax6o",
+    bitcoinBalance: 361.54,
+  },
+
+  {
+    email: "antone87@gmail.com",
+    password: "antone",
+    bitcoinAddress: "1cKP3SVjSFwbGDYwJgeqfB4gYMEw",
+    bitcoinBalance: 153.24,
+  },
+];
+
+export const db = (() => {
+  const getUsers = () =>
+    delayedResolve(users.map(({ password, ...rest }) => rest));
+
+  const addUser = (email, password) => {
+    const foundUser = users.find((user) => user.email === email);
+
+    if (foundUser) {
+      throw new Error("Email already exists.");
+    }
+
+    const newUser = {
+      email,
+      password,
+      ...bitcoinAddressBuilder.generateBitcoinAddress(),
+    };
+
+    users.push(newUser);
+
+    return delayedResolve(newUser);
+  };
+
+  const findUser = (email, password) => {
+    const foundUser = users.find((user) => user.email === email);
+
+    if (!foundUser) {
+      throw new Error("User not found");
+    }
+
+    if (foundUser.password !== password) {
+      throw new Error("Password not matched.");
+    }
+
+    return delayedResolve(foundUser);
+  };
+
+  return {
+    getUsers,
+    addUser,
+    findUser,
+  };
+})();
+
+// BitcoinApp.jsx
+import React from "react";
+import { Redirect, BrowserRouter, Switch, Route } from "react-router-dom";
+import UsersPage from "./pages/UsersPage";
+import RegisterPage from "./pages/RegisterPage";
+
+export default function BitcoinApp() {
+  return (
+      // 브라우저 라우터
+    <BrowserRouter>
+          // 스위치 통해서 해당 페이지로 이동하게 함
+      <Switch>
+          // "/"
+        <Redirect exact from="/" to="/users" />
+        // "/users"는 Userspage로 이동
+          <Route path="/users" component={UsersPage} />
+       // "/register"는 RegisterPage로 이동
+        <Route path="/register" component={RegisterPage} />
+      </Switch>
+    </BrowserRouter>
+  );
+}
+
+// Userpage.jsx  
+import { useState, useEffect } from "react";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
+import { PageLayout } from "../PageLayout";
+import UserDetail from "../components/UserDetail";
+import * as authAPI from "../../service/auth"
+
+function UsersPage() {
+  const [users, setUsers] = useState(undefined);
+  
+  // authAPI.getUsers를 이용해 유저 목록을 불러오세요.
+  useEffect(() => {
+    authAPI
+        .getUsers()
+        .then(setUsers)
+        .catch(console.error)
+  }, [])
+
+  return (
+    <PageLayout>
+      <nav>
+        <Link to="/register">Register</Link>
+      </nav>
+
+      {!users ? (
+        <div>유저 정보를 불러오는 중입니다...</div>
+      ) : (
+        users.map((user) => <WrappedUserDetail {...user} />)
+      )}
+    </PageLayout>
+  );
+}
+
+export default UsersPage;
+
+const WrappedUserDetail = styled(UserDetail)`
+  & + & {
+    margin-top: 12px;
+  }
+`;
+
+// RegisterPage.jsx
+import { Link, useHistory } from "react-router-dom";
+import styled from "styled-components";
+import { PageLayout } from "../PageLayout";
+import RegisterForm from "../components/RegisterForm";
+import * as authAPI from "../../service/auth"
+
+export default function RegisterPage() {
+  const history = useHistory();
+
+  const handleSubmit = (formData) => {
+    // formData에는 email, password가 들어있습니다.
+    // 이 정보를 바탕으로 authAPI.registerUser 를 이용해 유저를 등록하세요.
+    // 성공적으로 유저를 등록했으면 유저 목록 페이지로 이동하세요.
+    console.log(formData)
+    
+    authAPI
+        .registerUser(formData)
+      // 해당 URL로 이동하게 함
+        .then(() => history.push('/users'))
+        .catch(console.error)
+  };
+
+  return (
+    <PageLayout>
+      <nav>
+        <Link to="/users">Users</Link>
+      </nav>
+      <WrappedRegisterForm onSubmit={handleSubmit} />
+    </PageLayout>
+  );
+}
+
+const WrappedRegisterForm = styled(RegisterForm)`
+  margin-bottom: 12px;
+`;
+
+
+// registerForm.jsx  
+import React, { useRef } from "react";
+import styled from "styled-components";
+
+export default function RegisterForm({ className, onSubmit }) {
+  const formRef = useRef();
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const confirmPasswordRef = useRef();
+
+  const submitForm = (e) => {
+    e.preventDefault();
+
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+    const confirmPassword = confirmPasswordRef.current.value;
+
+    if (email.length === 0 || password.length === 0) {
+      return;
+    }
+
+    if (confirmPassword !== password) {
+      confirmPasswordRef.current.setCustomValidity("Different from password");
+      return;
+    }
+
+    const formData = {
+      email,
+      password,
+    };
+
+    onSubmit(formData);
+    formRef.current.reset();
+  };
+
+  return (
+    <Container className={className}>
+      <form ref={formRef}>
+        <fieldset>
+          <label htmlFor="email">Email</label>
+          <input
+            placeholder="Enter email."
+            required
+            ref={emailRef}
+            id="email"
+            type="email"
+            name="email"
+            autocomplete="off"
+          />
+        </fieldset>
+
+        <fieldset>
+          <label htmlFor="password">Password</label>
+          <input
+            required
+            ref={passwordRef}
+            id="password"
+            type="password"
+            name="password"
+            placeholder="Enter password."
+          />
+        </fieldset>
+
+        <fieldset>
+          <label htmlFor="confirmPassword">Confirm Password</label>
+          <input
+            required
+            ref={confirmPasswordRef}
+            id="confirmPassword"
+            type="password"
+            name="confirmPassword"
+            placeholder="Enter password again."
+          />
+        </fieldset>
+        <RegisterButton onClick={submitForm}>Register</RegisterButton>
+      </form>
+    </Container>
+  );
+}
+
+const Container = styled.div`
+  fieldset {
+    margin: 0;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  label {
+    margin-right: 4px;
+  }
+
+  input[type="password"]:invalid,
+  input[type="email"]:invalid {
+    border: 1px solid red;
+  }
+
+  input[type="password"]:valid,
+  input[type="email"]:valid {
+    border: 1px solid green;
+  }
+
+  form:invalid {
+    border: 5px solid #ffdddd;
+  }
+`;
+
+const RegisterButton = styled.button.attrs({ type: "submit" })`
+  width: 100%;
+  height: 40px;
+`;
+
+
+```
+
+### 상세 페이지 추가하기
+
+```jsx
+// registerForm.jsx  
+import { Link, useHistory } from "react-router-dom";
+import styled from "styled-components";
+import * as authAPI from "../../service/auth";
+import { PageLayout } from "../components/PageLayout";
+import RegisterForm from "../components/RegisterForm";
+import Navigation from "../components/Navigation";
+
+export default function RegisterPage() {
+  const history = useHistory()
+
+  const handleSubmit = (formData) => {
+    // formData에는 email, password가 들어있습니다.
+    // 이 정보를 바탕으로 authAPI.registerUser 를 이용해 유저를 등록하세요.
+    // 성공적으로 유저를 등록했으면 유저 목록 페이지로 이동하세요.
+    console.log(formData)
+    const handleSubmit = (formData) => {
+    authAPI
+        .registerUser(formData)
+        .then(() => history.push('/users'))
+  };
+}
+  return (
+    <PageLayout>
+      <Navigation>
+        <Link to="/users">유저 목록</Link>
+      </Navigation>
+      <h2>유저 회원가입</h2>
+      <WrappedRegisterForm onSubmit={handleSubmit} />
+    </PageLayout>
+  );
+}
+
+const WrappedRegisterForm = styled(RegisterForm)`
+  margin-bottom: 12px;
+`;
+
+
+// userDetailPage.jsx
+import React, { useState, useEffect } from "react";
+import { Link, useHistory, useParams } from "react-router-dom";
+import * as authAPI from "../../service/auth";
+import { PageLayout } from "../components/PageLayout";
+import TransferForm from "../components/TransferForm";
+import Navigation from "../components/Navigation";
+import { colors } from "../../style/colors";
+import styled from "styled-components";
+import { Bitcoin } from "../elements/Bitcoin";
+
+function UserDetailPage() {
+  const { email } = useParams();
+  const [addresses, setAddresses] = useState([]);
+  const history = useHistory();
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState("");
+  
+  // 유저의 상세 정보를 로드하여 user에 저장하고, 정보를 보여주세요.
+  useEffect(() => {
+    const decodedEmail = decodeURIComponent(email)
+    
+    authAPI
+        .getUser(decodedEmail)
+        .then(setUser)
+        .catch(e => setError(e.message))
+    authAPI
+        .getUsers()
+        .then(users => users.map(user => user.bitcoinAddress))
+        .then(setAddresses)
+        .catch(e => setError(e.message))
+  }, [])
+
+  const handleSubmit = (formData) => {
+    const { address, amount } = formData;
+    // address는 다른 유저의 주소입니다.
+    // 비트코인을 다른 유저에게 전송하는 기능을 구현하세요.
+    // 성공적으로 전송했으면 유저 목록 페이지로 이동하세요.
+    console.log(address, amount)
+    
+    authAPI
+        .transferBitcoin(user.bitcoinAddress, address, amount)
+        .then(() => history.push('/users'))
+        .catch(e => setError(e.message))
+  };
+
+  return (
+    <PageLayout>
+      <Navigation>
+        <Link to="/users">유저 목록</Link>
+      </Navigation>
+
+      <h2>유저 상세정보</h2>
+
+      {!user ? (
+        <div>Loading...</div>
+      ) : (
+        <>
+          <Bitcoin>
+            <div>
+              <strong className="title">Bitcoin Address</strong>
+              <span className="content">{user.bitcoinAddress}</span>
+            </div>
+
+            <div>
+              <strong className="title">Bitcoin Balance</strong>
+              <span className="content">{user.bitcoinBalance} BTC</span>
+            </div>
+          </Bitcoin>
+
+          <h3>비트코인 전송</h3>
+
+          <TransferForm addresses={addresses} onSubmit={handleSubmit} />
+          {error && <div>{error}</div>}
+        </>
+      )}
+    </PageLayout>
+  );
+}
+
+export default UserDetailPage;
+
+```
+
+### useState를 활용하여 User Table 상태관리 앱 만들기
+
+```jsx
+import React, { Fragment, useState, useEffect } from "react";
+import styled from "styled-components";
+import axios from "axios";
+import UserTable from "./UserTable";
+
+const checkboxes = [
+  {
+    id: "filter-username",
+    name: "filter-username",
+    pathFn: (user) => user.username,
+    label: "Filter by Username",
+  },
+
+  {
+    id: "filter-city",
+    name: "filter-city",
+    pathFn: (user) => user.address.city,
+    label: "Filter by City",
+  },
+
+  {
+    id: "filter-company",
+    name: "filter-company",
+    pathFn: (user) => user.company.name,
+    label: "Filter by Company",
+  },
+];
+
+export default function App() {
+  // 데이터를 필터링 하는 코드를 구현해보세요.
+  // searchData - search에 기반이 되는 리스트입니다.
+  // 쿼리를 안 쳤을 때 보여주는 초기 데이터  
+  const [searchData, setSearchData] = useState([])
+  // users - query를 기준으로 search하여 결과를 저장하는 리스트입니다.
+  const [users, setUsers] = useState([]);
+  // query - 유저의 입력입니다.
+  const [query, setQuery ] = useState('')
+  // filters - filter name에 따른 pathFn을 저장하는 맵입니다.
+  const [filters, setFilters] = useState({})
+  
+  const handleCheckboxChange = (pathFn) => (e) => {
+    const name = e.target.name
+    if (e.target.checked) {
+        // filter를 추가합니다.
+        return setFilters(filterObj => ({ ...filterObj, [name]: pathFn }))
+    }
+    
+    // filter를 제거합니다.
+    setFilters(({ [name] : _, ...rest }) => rest)
+  }
+
+  useEffect(() => {
+    axios
+      .get("https://jsonplaceholder.typicode.com/users")
+      .then((res) => {
+        const fetchedUsers = res.data
+        setUsers(fetchedUsers)
+        setSearchData(fetchedUsers)
+      })
+  }, []);
+  
+  useEffect(() => {
+    // query가 바뀔 때 서치 로직을 구현하세요.
+    // 쿼리의 변경을 감지
+    console.log('쿼리가 바뀌었습니다.', query)
+    if (!query) {
+        return setUsers(searchData)
+    }
+    // filters 
+    // {
+    //   ['filter-username'] : pathFn
+    //   ['filter-city'] : pathFn
+    // }
+    
+    // user => user.username
+    // pathFn(user) "Karianne"
+    // ["Karianne", "City", "Address"]
+    // ["kariannecityaddress", search(query) !== -1 ex) "kar"]
+    const stringifyUser = (user) => {
+        return Object
+            .values(filters)
+            .map(fn => fn(user))
+            .map(str => str.toLowerCase())
+            .join()
+    }
+    
+    const isUserQualified = (user) => {
+        stringifyUser(user)
+        .search(query) !== -1
+    }
+    
+    const filteredUsers = searchData.filter(isUserQualified)
+        setUsers(filteredUsers)
+  }, [query, searchData])
+
+  return (
+    <Container>
+      <div>
+        <label htmlFor="search-query">Search</label>
+        <input
+          id="search-query"
+          type="text"
+          name="search-query"
+          value={query}
+          onChange={(e) => setQuery(e.target.value.trim().toLowerCase())}
+        />
+        <button type="button" onClick={() => {
+            setQuery('')
+            setFilters({})
+        }} >
+          Reset
+        </button>
+      </div>
+
+      <CheckboxController>
+        {checkboxes.map(({ id, name, pathFn, label }) => (
+          <Fragment key={id}>
+            <input
+              type="checkbox"
+              id={id}
+              name={name}
+              onChange={handleCheckboxChange(pathFn)}
+            />
+            <label htmlFor={id}>{label}</label>
+          </Fragment>
+        ))}
+      </CheckboxController>
+
+      <UserTable users={users} />
+    </Container>
+  );
+}
+
+const Container = styled.div`
+  min-height: 600px;
+`;
+
+const CheckboxController = styled.div`
+  padding: 8px 0;
+
+  input:not(:first-of-type) {
+    margin-left: 20px;
+  }
+`;
+
+```
+
+
 
