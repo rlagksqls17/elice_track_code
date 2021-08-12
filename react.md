@@ -475,11 +475,107 @@ useState 보다 복잡한 상태를 다룰 때 사용
 
 별도의 라이브러리 없이 flux pattern에 기반한 상태 관리를 구현  
 
-const [state, dispatch] = useReducer(reducer, initState)
+const initState = {
+    {객체 값}
+}
 
+const mainReducer = (state = initState.action)
+=> {
+    switch(actiontype){
+            case[전달 받은 타입]:
+            	return 적용 값:
+    }
+}
 nested state등 복잡한 여러 개의 상태를 한꺼번에 관리하거나 어떤 상태에 여러 가지 처리를 적용할 때 유용  
 
 상태가 복잡하다면, useState에 관한 callback을 내려주는 것보다 dispatch를 prop으로 내려 리렌더링을 최적화하는 것을 권장
+```
+
+```jsx
+// App.js
+
+import React, {useState, useEffect} from 'react';
+import {Provider, useDispatch, useSelector} from "react-redux";
+import store from "./redux/store"
+import {increment} from "./redux/action"
+
+function Count2() {
+  // 액션을 전달할 필요가 없기 때문에 dispatch를 사용 안함
+  const count = useSelector((state) => state.count);
+  return (
+    <p>{count}</p>
+  )
+}
+
+// state를 전역으로 가져오는 Reducer
+function Count(){
+  // 액션을 리듀서로 전달
+  const dispatch = useDispatch();
+  // initstate를 가져옴 (스토어가 설명을 위해 생략 됨)
+  const count = useSelector((state) => state.count);
+
+  const handleClick = () => {
+    // setState와 비슷한 역할
+    dispatch(increment());
+  }
+
+  return (
+    <div>
+      <button onClick = {handleClick}>증가</button>
+      <p>카운트 : {count}</p>
+    </div>
+  )
+}
+
+function App(){
+  return (
+    // Provider 안에 있는 컴포넌트들만 dispatch와 selector를 사용할 수 있음
+    <Provider store = {store}>
+      <div className = "App">
+        <Count />
+        <Count2 />
+      </div>
+    </Provider>
+  )
+}
+
+export default App;
+
+// reducer.js  
+
+const initState = {
+    count: 0
+}
+
+const Reducer = (state = initState, action) => {
+    switch(action.type) {
+        case "INCREMENT":
+            return {
+                count: state.count + 1
+            }
+        default:
+            return state;
+    }
+}
+
+export default Reducer;
+
+// action.js  
+
+export const increment = () => {
+    return {
+        type: "INCREMENT",
+    }
+}
+
+// store.js  
+
+import {createStore} from 'redux';
+import Reducer from "./reducer"
+
+const store = craeteStore(Reducer)
+
+export default store;
 ```
 
 
@@ -2627,5 +2723,345 @@ const CheckboxController = styled.div`
 
 ```
 
+# Styled component  
 
+## **CSS Module**  
+
+```css
+class.id 등에 random string을 달아주기 때문에 
+선택자가 겹칠 우려가 없음  
+
+스타일 충돌을 방지하고 코드를 격리하여 채계적으로 CSS 설계가 가능  
+
+스타일링 직접 하나하나 해야 함  
+```
+
+```jsx
+// App.jsx
+import styles from "./app.module.css";
+
+export default function App() {
+    return (
+    	<div>
+            // css의 .title을 가져옴
+        	<h1 className={styles.title}>Pink Hello World</h1>
+            // 일반 string title
+            <div className={styles.['buttons-container']} />
+            <h1 className={"title"}>Normal Hello World</h1>
+        </div>
+    )
+}
+
+// app.module.css  
+h1 {
+    font-size: 1.5rem;
+}
+
+.title {
+    font-size: 2.5rem;
+    color: palevioletred;
+}
+```
+
+## UI framework  
+
+```css
+이미 다 만들어져 있어서 간편하고 쉽게 쓰기에 좋음  
+styling의 학습 및 훈련이 필요한 초심자들에게는 비추천  
+해당 framework의 디자인철학을 벗어나기 쉽지 않음  
+컴포넌트들을 커스터마이징 하기 어려움
+```
+
+```jsx
+// App.jsx  (Ant Design 예시)
+import "antd/dist/antd.css";
+import { Button } from "antd";
+
+export default function App(){
+    return{
+        <div>
+        	<Button type = "primary">Primary Button</Button>
+            <Button type = "secondary">Secondary Button</Button>
+            <Button type = "danger">Danger Button</Button>
+        </div>
+    }
+}
+```
+
+## CSS framework  
+
+```css
+거대한 CSS 파일 하나를 가져오는 것임  
+개발자가 따로 CSS 파일을 작성하지 않아도  
+HTML에 클래스만 적어주면 정해진 규칙대로 스타일링이 적용됨  
+CSS에 대한 이해력이 있어도 해당 framework를 사용하기 위한 학습을 또다시 해야함  
+이미 다 만들어져 있어서 styling의 학습 및 훈련이 필요한 초심자들에게는 비추천
+```
+
+```jsx
+// App.jsx (W3CSS 예시)
+import { Helmet } from "react-helmet";
+
+export default function App(){
+    return(
+    	<div>
+        	<Helmet>
+            	<link 
+                    rel = "stylesheet"
+                    href = "https://www.w3schools.com
+                            					/w3css/4/w3.css" 
+                    />
+            </Helmet>
+            <div className = "w3-container w3-green">
+            	<h1>W3Schools Demo</h1>
+            	<p>Resize this responsive page</p>
+            </div>
+            <div className="w3-row-padding">
+            	<div className="w3-third">
+                	<h2>London</h2>
+                    <p>Lorem</p>
+                    <p>Lorem</p>
+                </div>
+            </div>
+        </div>
+    )
+}
+```
+
+## CSS-in-JS library  
+
+```css
+따로 CSS 파일을 만들 것 없이 JSX 파일 안에서 스타일링까지 해결 가능함  
+컴포넌트 재사용성이 쉬워짐  
+JS 값들을 Props로 넘겨줘서 해당 JS 값에 의도된 styling을 바로 적용할 수 있음  
+class 이름에 random string이 생성되기 때문에 선택자 이름이 겹칠 우려가 없음  
+스타일링을 직접 개발자가 하나하나 해야함
+```
+
+```jsx
+import styled from "styled-components";
+
+const Title = styled.h1`
+	font-size: 1.5rem;
+	text-align: center;
+	color: palevioletred;
+`
+
+export default function App(){
+    return <Title>Hello World</Title>
+}
+```
+
+## SCSS  
+
+```scss
+/* SCSS를 이용해 코드를 리팩토링하세요, */
+.container {
+    padding: 10px;
+    background-color: lightgray;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .counter {
+        width: 100px;
+        height: 50px;
+        line-height: 50px;
+        font-size: 2rem;
+        border: 1px solid black;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .buttons-container {
+    margin-top: 20px;
+    }
+    
+    button {
+    color: white;
+    width: 80px;
+    height: 50px;
+    text-align: center;
+    border-radius: 10px;
+        + button {
+            margin-left: 10px;
+        }
+        
+        &.inc{
+        background-color: blue;       
+        }
+        &.dec{
+        background-color: red;
+        }
+        &:hover{
+            box-shadow: 10px 5px 5px gray;
+        }
+    }
+
+}
+```
+
+![image-20210812003939039](C:\Users\joo\AppData\Roaming\Typora\typora-user-images\image-20210812003939039.png)
+
+## javaScript template literal 
+
+```js
+Template literals: 템플릿 리터럴은 내장된 표현식을 허용
+쉽게 말해 문자열 안에서 js 표현식을 사용할 수 있게 하는 문법
+
+`string text ${expression} string text`
+
+const boolean = true  
+const message = `hello ${boolean}`
+
+console.log(message)
+
+---
+const name = "chalie"
+const gender = "male"
+const message = `hello ${gender === "male" ? "Mr." : "Mrs." ${name}, nece to meet you`
+
+```
+
+```js
+const isAdult = (n) => n > 19;
+const name = "mike"
+
+const answer = `My name is ${name}, and I am ${isAdult(35) ? "an adult" : "a child"}`
+```
+
+## styled components  
+
+```jsx
+const Button = styled.button`
+	font-size: 1em;
+	margin: 1em;
+	padding: 0.25em 1em;
+	border: 2px solid palevioletred;
+	border-radius: 3px;
+	background: ${props => props.primary ? "palevioletred" : "white"};
+	color: ${props => props.primary ? "white" : "palevioletred"};`
+
+function App(){
+	return(
+		<div>
+        	<Button>Normal Button</Button>
+            <Button primary>Primary Button</Button>
+        </div>
+	)
+}
+`
+```
+
+### css 예제
+
+```jsx
+API Response와 과목, 트랙 리스트 UI 연동하기
+
+import axios from "axios";
+import { useState, useEffect } from "react";
+import styled from "styled-components";
+import Tab from "./Tab.jsx";
+import SearchTextField from "./SearchTextField.jsx";
+import CardCount from "./CardCount.jsx";
+import TrackCard from "./TrackCard.jsx";
+import CourseCard from "./CourseCard.jsx";
+import Pagination from "./Pagination.jsx";
+
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+  height: 100vh;
+  width: 1232px;
+  margin: auto;
+  padding-top: 100px;
+  flex-direction: column;
+`;
+
+
+const TracksContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 398px);
+  grid-column-gap: 19px;
+  grid-row-gap: 32px;
+`;
+
+const CoursesContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 296px);
+  grid-column-gap: 16px;
+  grid-row-gap: 24px;
+`;
+
+export default function App() {
+  const [currTab, setCurrTab] = useState("트랙");
+  const [searchValue, setSearchValue] = useState("");
+  const [currPage, setCurrPage] = useState(0);
+  const [cardData, setCardData] = useState([]);
+  const [totalCardCount, setTotalCardCount] = useState(0);
+
+  const handleClickTab = (tab) => {
+    if (tab !== currTab) setSearchValue("");
+    setCurrTab(tab);
+  };
+
+  const handleChangeSearch = (val) => {
+    setSearchValue(val);
+  };
+  
+  useEffect(() => {
+    //여기에서 과목, 트랙 데이터를 서버로부터 가져오는 API를 호출하세요.
+    (async function(){
+        if (currTab==="트랙"){        
+            const API_END_POINT = "https://api-beta.elicer.io:6664/org/academy/"
+            const trackUrl = `${API_END_POINT}track/list/?offset=0&count=6`;
+            const response = await axios.get(trackUrl);
+
+            setTotalCardCount(response.data.track_count);
+            setCardData(response.data.tracks);
+        }
+        if (currTab==="과목"){        
+            const API_END_POINT = "https://api-beta.elicer.io:6664/org/academy/"
+            const courseUrl = `${API_END_POINT}course/list/?offset=0&count=8`;
+            const response = await axios.get(courseUrl);
+
+            setTotalCardCount(response.data.course_count);
+            setCardData(response.data.courses);
+        }
+    })()
+
+  }, [currTab]);
+
+  return (
+    <Container>
+      <Tab currTab={currTab} onClick={handleClickTab} />
+      <SearchTextField value={searchValue} onChange={handleChangeSearch} />
+      <CardCount count={totalCardCount}/>
+      {currTab === "트랙" ? (
+        <TracksContainer>
+          {cardData.map((_, i) => (
+            <TrackCard
+              key={`track-card-${i}`}
+            />
+          ))}
+        </TracksContainer>
+      ) : (
+        <CoursesContainer>
+          {cardData.map((course, i) => (
+            <CourseCard
+              title={course.title}
+              key={`course-card-${i}`}
+            />
+          ))}
+        </CoursesContainer>
+      )}
+      <Pagination
+        currPage={currPage}
+        pageCount={15}
+        onClickPage={setCurrPage}
+      />
+    </Container>
+  );
+}
+
+
+```
 
