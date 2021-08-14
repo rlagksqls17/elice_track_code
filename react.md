@@ -2,6 +2,7 @@
 
 ### 디렉토리 구조 살펴보기  
 
+```jsx
 **./node_modules/** 
 
 : npm을 이용해 설치한 패키지들 모음 
@@ -25,6 +26,7 @@
 **./README.md** 
 
 : 내 프로젝트에 관한 설명을 작성하는 파일 
+```
 
 ```js
 // CSS나 import 하는 것 만으로 역할을 하는 라이브러리인 경우 패키지 명을 바로 import
@@ -45,7 +47,7 @@ import = as something from "패키지명"
 import "./App.css"  
 ```
 
-## jsx  
+## jsx 정보
 
 특징 
 
@@ -471,21 +473,90 @@ function reducer(state, action){
 ### useReducer
 
 ```js
-useState 보다 복잡한 상태를 다룰 때 사용
+// useState 보다 복잡한 상태를 다룰 때 사용
+// 별도의 라이브러리 없이 flux pattern에 기반한 상태 관리를 구현  
+// 다음과 같이 선언
+// setState 대신 dispatch 함수를 이용하여 reducer 함수에 type을 넘겨줌으로써 각각의 state를 설정함
+const [<상태 객체>, <dispatch 함수>] = useReducer(<reducer 함수>, <초기 상태>, <초기 함수>)
 
-별도의 라이브러리 없이 flux pattern에 기반한 상태 관리를 구현  
+import React, { useEffect, useReducer } from 'react';
+import axios from 'axios';
 
-const initState = {
-    {객체 값}
-}
-
-const mainReducer = (state = initState.action)
-=> {
-    switch(actiontype){
-            case[전달 받은 타입]:
-            	return 적용 값:
+// reducer() 함수를 완성하세요.
+function reducer(state, action) {
+    switch (action.type) {
+        case 'LOADING':
+            return {
+                loading: true,
+                data: [],
+                error: null
+            };
+        case 'SUCCESS':
+            return {
+                loading: false,
+                data: action.data,
+                error: null                
+            };
+        case 'FAIL':
+            return {
+                loading: false,
+                data: [],
+                error: action.error
+            };
+        default:
+            throw new Error();
     }
 }
+
+const initialUserState = {
+  loading: false,
+  data: [],
+  error: null
+}
+
+function Users() {
+    const [state, dispatch] = useReducer(reducer, initialUserState);
+    
+    async function fetchUser() {
+        try {
+            // dispatch를 이용해 state를 설정하는 코드입니다.
+            dispatch({ type: 'LOADING' });
+            const response = await axios.get(
+                'https://jsonplaceholder.typicode.com/users'
+            );
+            dispatch({ type: 'SUCCESS', data: response.data });
+        } catch (e) {
+            dispatch({ type: 'FAIL', error: e });
+        }
+    };
+    
+    useEffect(() => {
+        fetchUser();
+    }, []);
+    
+    // useReducer의 state를 불러오는 코드입니다.
+    const { loading, data, error } = state;
+    
+    if(loading)
+        return <h4>로딩중...</h4>;
+    if(error)
+        return <h4>에러 발생!</h4>;
+    
+    const userName = data.map(
+        (user) => (<li key={user.id}> {user.name} </li>)
+    );
+    
+    return (
+        <>
+            <h4>사용자 리스트</h4>
+            <div> {userName} </div>
+            <button onClick={fetchUser}>다시 불러오기</button>
+        </>
+    );
+}
+
+export default Users;
+
 nested state등 복잡한 여러 개의 상태를 한꺼번에 관리하거나 어떤 상태에 여러 가지 처리를 적용할 때 유용  
 
 상태가 복잡하다면, useState에 관한 callback을 내려주는 것보다 dispatch를 prop으로 내려 리렌더링을 최적화하는 것을 권장
@@ -682,13 +753,15 @@ const App = () => {
 }
 ```
 
-##### Promise  
-
-resolve : 로직이 성공 시 실행하면 fulfilled(이행) 상태가 되게 해주는 callback함수임  
-
-reject : 로직이 실패하였을 때 실행하면 rejected 상태가 되게 해주는 callback 함수임
+## Promise  
 
 ```jsx
+// Promise : 비동기 처리에서 사용되는 객체, Promise가 상태를 관리함  
+
+/*resolve : 로직이 성공 시 실행하면 fulfilled(이행) 상태가 되게 해주는 callback함수임  
+
+reject : 로직이 실패하였을 때 실행하면 rejected 상태가 되게 해주는 callback 함수임*/
+
 function getUser(id) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -711,7 +784,7 @@ getUser(1)
 	});
 ```
 
-## Async/Await  
+### Async/Await  
 
 es6에서 나온 개념  
 
@@ -722,46 +795,100 @@ promise 반환하는 함수 앞에 await을 명시
 async함수는 항상 promise 함수 반환  
 
 ```jsx
-// 제일 문제가 없음
-function getUser(id) {
-  return new Promise((resolve, reject) => {
+// resolve는 코드를 이행하는 것 
+	// ('resolved') 반환
+function resolveAfter2Seconds() {
+  return new Promise(resolve => {
     setTimeout(() => {
-      console.log("Reading from a database....");
-			if(id !== 1){
-				reject("User not found!");
-			}
-      resolve({ id: id, username : "test" });
+      resolve('resolved');
     }, 2000);
   });
 }
 
-function updateUser(username) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      console.log("Update User");
-			if(username !== "test"){
-	      reject(new Error("Error occured in repositories"));
-			}
-			resolve({id:1,username:"test2"});
-    }, 2000);
-  });
+// 코드 실행 후 asyncCall에는 Calling 을 콘솔창에 출력한 뒤, 2초 후 resolved를 출력함  
+	// async는 함수 이름 부분의 제일 앞에,
+	// await는 결과를 기다릴 함수 호출 부분 앞에 작성함
+
+// async : 해당 함수에서 비동기 처리를 위한 Promise 동작을 한다는 것을 명시  
+// await : 호출되는 함수가 적절한 결과를 반환할 때까지 기다림
+	// await을 사용하기 위해 async를 명시해야 함
+async function asyncCall() {
+  console.log('calling');
+  const result = await resolveAfter2Seconds();
+  console.log(result);
 }
 
-async function delayGetUser() {
-	try {
-		const user = await getUser(1);
-		const updatedUser = await updateUser(user.username);
-		console.log(updatedUser);
-		return updatedUser;
-	} catch(err){
-		console.log(`Error : ${err.message}`);
-	}
+asyncCall();
+```
+
+### axios  
+
+```jsx
+// 동기방식
+axios.get('request url')
+	.then(
+	(response) => {
+     	console.log("받아온 데이터", response.data)   
+    })
+
+// 비동기방식
+axios.get(`요청할 url 1`)
+  .then(res => axios.get(`요청할 url 2`))
+  .then(res => {
+    const ps = res.data.map(user => axios.get(`요청할 url 3`));
+    ···
+  })
+  .then(ress => ···)))
+  .then(repoArrs => {
+    ···
+    }
+    ···
+  })
+// 근데 이런걸 콜백 지옥이라함. 이 콜백지옥을 벗어나기 위해 async와 await을 이용할 수 있음 (위에 있음)
+  
+  import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+function Users() {
+    const [users, setUsers] = useState([]);
+    const [error, setError] = useState(null);
+    
+    useEffect(() => {
+        async function fetchUser() {
+            // try ~ catch를 이용해 예외 처리를 하세요.
+            const response = await axios.get(
+                'https://jsonplaceholder.typicode.com/error'
+            );
+            setUsers(response.data);
+        };
+        fetchUser();
+    }, []);
+    
+    const userName = users.map(
+        (user) => (<li key={user.id}> {user.name} </li>)
+    );
+
+    if (error) return <h4>에러 발생!</h4>;
+    return (
+        <>
+            <h4>사용자 리스트</h4>
+            <div> {userName} </div>
+        </>
+    );
 }
 
-async function main(){
-	const user = await delayGetUser();
-	console.log(user);
-}
+export default Users;
+
+```
+
+
+
+### fetch  
+
+```jsx
+// API를 사용하여 백엔드 서버와 비동기 요청을 하는 방식 중 하나
+
+let promise = fetch(url, [options])
 ```
 
 
@@ -944,26 +1071,6 @@ setInterval(tick, 1000);
 
 serviceWorker.unregister();
 ```
-
-## axios  
-
-```jsx
-// 동기방식
-axios.get('request url')
-	.then(
-	(response) => {
-     	console.log("받아온 데이터", response.data)   
-    })
-
-// 비동기방식
-axios.get('request url', {post 요청에 보낼 객체})
-	.then(
-	(response) => {
-     console.log("받아온 데이터", response.data)   
-    })
-```
-
-
 
 
 
@@ -2723,6 +2830,46 @@ const CheckboxController = styled.div`
 
 ```
 
+### API 이용해 카페메뉴 불러오기
+
+```jsx
+import React, {useState} from 'react';
+import axios from "axios";
+
+// 지시사항에 따라 출력 결과와 동일한 동작을 하는 코드를 작성하세요.
+function App() {
+  
+  const [data, setData] = useState("")
+  
+  const handleOnclick = () => {
+    async function main(){
+        const API_url = `https://${window.location.hostname}:8190/data`
+        // axios.get(url) : API를 요청할때 사용
+        const response = await axios.get(API_url)
+        setData(response.data)
+    }
+    main()
+  }
+
+
+  return (
+    <div className="App">
+        {data === "" ? 
+        "":(
+            data.map((datas) => (
+                <li>{datas.item}</li>
+            ))
+           )
+        }
+        <button id="load" onClick={handleOnclick}>불러오기</button>
+    </div>
+  );
+}
+
+export default App;
+
+```
+
 # Styled component  
 
 ## **CSS Module**  
@@ -2951,7 +3098,7 @@ function App(){
 `
 ```
 
-### css 예제
+### react-css 예제
 
 ```jsx
 API Response와 과목, 트랙 리스트 UI 연동하기
@@ -3009,7 +3156,7 @@ export default function App() {
   
   useEffect(() => {
     //여기에서 과목, 트랙 데이터를 서버로부터 가져오는 API를 호출하세요.
-    (async function(){
+    (async function main(){
         if (currTab==="트랙"){        
             const API_END_POINT = "https://api-beta.elicer.io:6664/org/academy/"
             const trackUrl = `${API_END_POINT}track/list/?offset=0&count=6`;
@@ -3064,4 +3211,137 @@ export default function App() {
 
 
 ```
+
+# React 앱 배포
+
+```python
+# yarn start
+개발용 코드
+
+# yarn build
+프로젝트 완성한 후 비쥬얼스튜디오 코드에서 yarn build 통해서 빌드해주어야 함 (모든 소스를 최대한 모아서 오로지 보여주기 위한 요소들만 저장시켜 줌) #서버 터미널에서 실행
+
+링크 : https://chiseled-browser-c2e.notion.site/React-Flask-Azure-c3bb1ee37c02413eae98c88e6f2ab617
+
+azure 로그인  
+
+리소스 만들기 클릭  
+
+Ubuntu Server 클릭  
+	구독 선택  
+    가상머신 이름 마음대로  
+    관리자 계정 : 사용 아이디 입력  
+    인바운트 포트 규칙  (HTTP, HTTPS, SSH 선택)
+    
+프라이빗 키 다운로드 및 리소스 만들기해서 다운 받기
+**잃어버리면 안되고 잘 보관해두기**  
+
+다시 최신리소스로 돌아가서 확인  
+
+왼쪽 메뉴에서 연결 탭 클릭  
+
+ssh ~~~ key ip가 있음  
+파워셸들어가서 위의 명령어 입력  
+	->> azure 터미널로 이동  
+
+터미널 내에서 배포할 프로젝트를 git clone로 받아옴  
+	서버컴으로 클론
+    
+해당 경로로 이동해서 ls 사용해서 파일 확인  
+
+npm install  
+
+npm start 
+
+sudo apt update  
+
+sudo apt install npm -y
+
+** npm install 꼭 해줘야 함
+
+npm run build  
+
+npm -v 로 버전 확인  
+
+cd build  
+# build 경로 기억해두기 이 값을 추후에 default 값으로 설정
+pwd	
+
+sudo apt update
+sudo apt upgrade -y
+
+sudo apt install nginx -y
+cd /etc/nginx/sites-available
+
+ls 시 default 값이 있어야 함  
+
+> cd /etc/nginx/sites-available
+> sudo chmod 777 default
+> vi default
+
+- 기본값인 root /var/www/html; 부분을 아까 기억해둔 build 폴더 경로로 변경
+
+           - vi 입력 명령어 : 화살표로 입력할 곳으로 간 후 ⇒ i 키보드 입력 ⇒  내용 작성 ⇒ Esc 키도브 입력
+
+           - vi 저장 명령어 : Esc 키보드 입력 ⇒ wq! ⇒ 엔터
+                
+# 쓰기 모드로 변경 법 : sudo chmod 777 default
+저장 : wq 
+나가기 : q
+
+sudo service nginx start
+sudo service nginx restart로 다시 켜줌  
+
+
+Azure VM에 나와있는 공용 IP 주소 확인
+해당 경로 접속 # 여기까지가 프론트엔드만 킨 거임  
+
+# 플라스크 서버를 켜야함  
+vi default  
+default 파일 내려가다 보면  
+location/ 부분으르 수정해야 함
+
+# 요청이 있을 경우 내가 사용하는 포트로 데이터를 넘겨주겠다.
+location / api {
+    # 세미콜론 필수  
+    proxy_pass http://localhost:5000; 
+}
+
+sudo service nginx restart  
+
+cd ~/covid-map/  
+
+ls  
+
+# app.py 실행  
+sudo apt install python3-pip  
+# requirements.txt (따로 만들어줘야 함)
+pip install -r reqirements.txt (tab 눌러 자동완성)  
+
+python3 app.py  
+
+# 실행 서버를 확인 해보기  
+
+# 우리가 발급받은 api 경로로 바꿔줘야함  
+
+# vi app.py  
+# 불러오는 부분을 "api/covidData"로 바꿔줘야 함
+# 바꾸기 전에 nginx 끄기
+프론트엔드 부분의 env.js 를 
+우리가 발급받은 주소로 바꿔야함
+
+src/env.js
+export const BACKEND_URL = "http://{공용IP주소}/api"
+# 이렇게 파이썬 플라스크 포트로 넘어감  
+
+# 서버 부분 바뀌면 다시 빌드
+npm run build
+
+# ngnx 켜기, and  
+python3 app.py  
+
+
+```
+
+
 

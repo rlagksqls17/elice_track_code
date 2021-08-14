@@ -194,7 +194,7 @@ if(a && a.b && a.b.c){
 const y = a?.b?.c;  
 ```
 
-
+## 구문
 
 ### for 문  
 
@@ -212,7 +212,19 @@ if(j != 1 && j != i){
 }
 ```
 
-### 함수 생성  
+### 에러 캐치  
+
+```js
+try {
+    ···
+} catch(e) {
+    ···
+}
+
+if (error) return "error!"
+```
+
+## 함수 생성  
 
 ```js
 function calcRectArea(width, height) {
@@ -220,7 +232,7 @@ function calcRectArea(width, height) {
 }
 ```
 
-#### arrow function   
+### arrow function   
 
 ```js
 // function 표현 보다 구문이 짧음  
@@ -230,7 +242,7 @@ const d = (x, y) => {
 d(7, 8)
 ```
 
-
+## DOM
 
 ### 요소선택  - jquery
 
