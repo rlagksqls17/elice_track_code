@@ -1629,7 +1629,7 @@ React의 JSX를 이용하거나, History API를 사용하여 라우팅을 구현
 
 웹에서는 react-router-dom을 사용  
 
-적용 시, 서버의 모든 path에서 같은 앱을 서빙하도록 해야 함. React 컴포넌트를 특정 path와 연결하면, 해당하는 path로 진입 시 컴포넌트를 렌더링 하게 함.  
+**적용 시, 서버의 모든 path에서 같은 앱을 서빙하도록** 해야 함. React 컴포넌트를 특정 path와 연결하면, **해당하는 path로 진입 시 컴포넌트를 렌더링** 하게 함.  
 
 query, path variable 등 URL parameter를 얻어 활용함  
 
