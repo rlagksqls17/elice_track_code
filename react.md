@@ -824,6 +824,7 @@ asyncCall();
 ### axios  
 
 ```jsx
+import axios from 'axios';
 // 동기방식
 axios.get('request url')
 	.then(
@@ -1655,6 +1656,51 @@ Link로 특정 페이지로 이동 시 리로드 없이 페이지가 이동함
 
 Switch로, 매칭되는 라우트 하나를 렌더링하게 함
 
+```jsx
+function LoginPageContent(){
+    // 비밀번호와 아이디가 올바르게 입력되었다고 가정하고 메인페이지로 이동
+    const handleClickLogin = (e) =>{
+        window.location.href="/"
+    }
+    const handleClickJoin = (e) =>{
+        window.location.href="/join"
+    }
+    return(
+        <div>
+            <h1>로그인 페이지</h1>
+            <button onClick={handleClickLogin}>
+                로그인
+            </button>
+            <button onClick={handleClickJoin}>
+                회원가입하기
+            </button>
+        </div>
+    )
+}
+
+function LoginPage(){
+    return(
+        <Router>
+            <div>
+                <Switch>
+                    <Route path = "/login">
+                        <LoginPageContent />
+                    </Route>
+                    <Route path = "/join">
+                        <JoinPage />
+                    </Route>
+                    <Route path = "/">
+                        <MainPage />
+                    </Route>
+                </Switch>
+            </div>
+        </Router>
+    )
+}
+```
+
+
+
 #### Redirect 컴포넌트  
 
 Link와 비슷하나 렌더링 되면 to prop으로 지정한 path로 이동함  
@@ -2360,6 +2406,16 @@ export default function BitcoinApp() {
     </BrowserRouter>
   );
 }
+// 방법 2
+import {Redirect, Route} from 'react-router-dom'
+return (
+	<Route>
+		<Redirect to={{
+                  pathname: '/login',
+                  state: {from: props.loginState}
+		}}/>
+	</Route>
+      )
 
 // Userpage.jsx  
 import { useState, useEffect } from "react";
@@ -3218,6 +3274,29 @@ export default function App() {
 # yarn start
 개발용 코드
 
+http 배포시 80 포트로 배포
+https 는 443
+nginx 사용 하지말기 
+
+
+실제 배포시에는 yarn start는 사용하지 않아도 되고, yarn build 명령어를 통해 컴파일한 static html/js/css 파일을 사용하게 됩니다.
+따라서 flask 서버 포트만 사용하게 되고 서버 외에 다른 것은 띄우지 않아도 됩니다.
+nginx 설정을 하시면 별도 flask 서버 코드 수정 없이도 사용할 수 있습니다.
+예를들어 다음과 같이 초기 페이지를 설정해주면 됩니다.
+location / {
+    root   html;
+    index  index.html index.htm;
+}
+proxy pass는 http://localhost/:<서버 포트> 로 설정해주시면 됩니다.
+https://ichi.pro/ko/react-flask-aeb-bildeu-mich-baepo-78789469870041
+nginx를 사용하지 않고 한다면 아래 내용을 참고하시면 됩니다.
+https://ichi.pro/ko/react-flask-aeb-bildeu-mich-baepo-78789469870041
+    
+팁 : 실행스크립트를 만든다.
+로컬호스트는 사용하지 말기 (서버 IP를 environment로 가져오기)
+서버 실행할때 IP 주소를 가져와서 실행
+
+
 # yarn build
 프로젝트 완성한 후 비쥬얼스튜디오 코드에서 yarn build 통해서 빌드해주어야 함 (모든 소스를 최대한 모아서 오로지 보여주기 위한 요소들만 저장시켜 줌) #서버 터미널에서 실행
 
@@ -3344,4 +3423,48 @@ python3 app.py
 ```
 
 
+
+```js
+1. 엘리스 가상머신 접속
+
+ssh elice@[YOUR_DNS_NAME] 입력후 yes, 비밀번호 입력  
+
+2. 필요한 라이브러리 설치  
+> sudo apt update
+> sudo apt install npm -y
+> sudo apt install python3-pip -y
+// sudo apt install nginx -y
+
+3. 배포할 프로젝트 git clone
+// 클론 전에 모든 파일을 올려야 진행이 될 듯  
+
+4. 클론한 프로젝트 경로 이동
+cd KIMHANBIN
+cd frontend
+npm run build
+ls
+// build 폴더 위치 적기 : /home/elice/hanbinproject/KimHanBin-dev/frontend/build	
+5. ngnix 기본 설정 파일 재설정
+// sudo apt update
+// sudo apt upgrade -y
+// sudo apt install nginx -y
+cd /etc/nginx/sites-available
+
+ls 시 default 값이 있어야 함  
+
+> cd /etc/nginx/sites-available
+> sudo chmod 777 default
+> vi default
+
+- 기본값인 root /var/www/html; 부분을 아까 기억해둔 build 폴더 경로로 변경
+// ex : root /home/azureuser/covid-map/build;
+
+> sudo service nginx restart
+
+6. 공용 IP 주소로 접속
+DNS : elice@kdt-1st-project-60.koreacentral.cloudapp.azure.com
+공용 ip : 52.231.66.21
+
+종료 : 184342
+```
 

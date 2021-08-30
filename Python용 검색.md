@@ -1,3 +1,60 @@
+# 데이터 분석  
+
+## 문자열
+
+### .startswith()  
+
+```python
+word = "superman"
+print(word.startswith('s')) # True
+
+if word.startswith('a'):
+    print("a로 시작하는 단어입니다.")
+```
+
+### .split()
+
+```python
+numbers = "   1   2   3   "
+print(numbers.split()) # ['1', '2', '3']
+
+print(numbers.split(' ')) # ['', '', '1', '' ,'2', '', '3', '', '']
+```
+
+### .append()
+
+```python
+numbers = []
+numbers.append(1)
+
+print(numbers)  # [1]
+
+numbers.append(2)
+print(numbers) # [1, 2]
+```
+
+### .lower()
+
+```python
+intro = "My name is Elice"
+lower_intro = intro.lower()
+print(lower_intro)
+
+# "my name is elice"
+```
+
+### .replace()
+
+```python
+intro = "제 이름은 Elice입니다."
+print(intro.replace(' ', ''))
+# "제이름은Elice입니다."
+
+
+'/* elice */'.replace('/', '').replace('*', '').replace(' ', '')
+# 'elice'
+```
+
 
 
 # Math
@@ -257,6 +314,7 @@ def show(show_id):
     if request.method == "GET":
     	netflix = col.find({"_id" : ObjectId(show_id)})[0] 
     	return render_template('show.html', netflix = netflix)
+    
 ```
 
 ### 라우팅  (POST)  과  form
@@ -446,6 +504,10 @@ def friends_age():
     # friends/age?flag=1로 접근 가능
     q = request.args.get("flag")
 ```
+
+### migrate
+
+https://flask-migrate.readthedocs.io/en/latest/
 
 ## 로그인 코드 예제  
 
