@@ -208,7 +208,7 @@ SHOW GLOBAL VARIABLES LIKE 'PORT'
 
 ```mysql
 mysql -u rlagksqls17 -p project;
-
+K~B-zkq8eVFJ('$A<&9%c]M+TSbjPudm
 http://elice@kdt-1st-project-60.koreacentral.cloudapp.azure.com
 ```
 
