@@ -1,4 +1,4 @@
-# 데이터 분석  
+# 데이터 구조  
 
 ## 리스트
 
@@ -41,7 +41,11 @@ accounts = {
 print("kdhong" in accounts)  # True
 print("elice" in accounts)  # False
 
+```
 
+### .items()
+
+```python
 # 딕셔너리 순회하기
 accounts = {
     "kdhong" : "Kildong Hong"
@@ -108,6 +112,27 @@ print(intro.replace(' ', ''))
 # 'elice'
 ```
 
+## JSON
+
+```json
+// 웹 환경에서 데이터를 주고 받는 가장 표준적인 방식 
+// 키를 이용하여 원하는 데이터만 빠르게 추출 가능  
+// 데이터가 쉽게 오염되지 않음 
+// 다른 포맷에 비해 용량이 조금 큰 편 
+// JSON과 딕셔너리간 딱히 오가는데 문제 없음
+```
+
+### .loads
+
+```python
+json.loads(json_string) : JSON 형태의 문자열을 딕셔너리로 반환
+json.loads(dict_string) : 딕셔너리를 JSON 형태의 문자열로 반환
+```
+
+
+
+
+
 ## 데이터 정렬하기  
 
 ```python
@@ -170,9 +195,97 @@ with open('data.txt') as file:
 # 쓰기 모드로 파일을 연다.
 with open('data.txt', 'w') as file:
     file.write('Hello')
-   
-
 ```
+
+## CSV  
+
+```python
+# Comma Separated Value
+# 각 열이 특정한 의미를 가짐
+
+# movies.csv
+# 국문제목, 영문제목, 개봉 연도
+# 다른 구분 문자(|)도 사용 가능
+다크나이트, The Dark Knight, 2008
+겨울왕국, Frozen, 2013
+슈렉, Shrek, 2001
+슈퍼맨, Superman, 1978
+
+# 데이터에 구분 문자가 포함된 경우
+"Eat, Pray, Love", 2010 처럼 따옴표를 넣어줌
+
+# 오타가 날 경우 데이터 오염에 취약함 (구분문자 잘못 넣어준 경우 등)
+```
+
+### csv 파일 다루기  
+
+```python
+import csv
+
+# csv 파일 읽기
+with open('movies.csv') as file:
+    # 구분자를 이용하여 csv를 읽음
+    reader = csv.reader(file, delimiter=',')
+    for row in reader:
+        print(row[0])
+```
+
+
+
+## 집합  
+
+```python
+# 셋 다 같은 값 (순서와 중복이 없는 데이터 구조)
+set1 = {1, 2, 3}
+set2 = set([1, 2, 3])
+set3 = {3, 2, 3, 1}
+
+
+# 집합 다루기
+num_set = {1, 3, 5, 7}
+num_set.add(9)
+num_set.update([3, 15, 4])
+num_set.remove(7)  # 7이 없으면 에러 발생됨
+num_set.discard(13)  # 13이 없어도 무시 가능
+
+num_set = {1, 3, 5, 7}
+print(6 in num_set)  # false
+print(len(num_set))  # 4
+
+
+# 집합 연산
+union = set1 | set2  # 합집합
+interaction = set1 & set2  # 교집합
+diff = set1 -set2  # 차집합
+xor = set1 ^ set2  # XOR
+```
+
+# 고오급 함수
+
+### lambda
+
+```python
+def square(x):
+    return x * x
+
+square = lambda x: x*x
+```
+
+### 함수 안의 함수
+
+```python
+def adder(n):
+    def helper(x):
+        return x + n
+    return helper
+
+add_three = adder(3) # helper(n) return 3+n
+print(add_three(6)) # 9
+```
+
+
+
+# 데이터 시각화
 
 ## matplotlib  
 
