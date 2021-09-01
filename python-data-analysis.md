@@ -283,7 +283,101 @@ add_three = adder(3) # helper(n) return 3+n
 print(add_three(6)) # 9
 ```
 
+### map  
 
+```python
+def get_eng_title(row):
+    split = row.split(',')
+    return split[1]
+
+# 1
+eng_titles = map(get_eng_title, movies)
+# 2
+eng_titles = (lambda row: row.split(',')[1], movies)
+
+=> list가 아닌 map object가 반환됨
+=> 꺼낼 때마다 함수를 적용하여 응답하기 때문에
+```
+
+### filter()
+
+```python
+def starts_with_r(word):
+    return word.startswith('r')
+
+words = ['real', 'man', 'rhythm']
+r_words = filter(starts_with_r, words)
+# True로 나온 word에 대해서만 필터링하여
+# 리스트가 아닌 filter 타입을 가짐
+```
+
+# ---
+
+# Numpy
+
+```python
+np.arrary([1, 2, 3, 4, 5])
+np.array([[1, 2], [3, 4]])
+
+
+# array([1., 2., 3., 4.])
+arr = np.array([1, 2, 3, 4], dtype='float')
+
+
+---
+# 배열 데이터 타입 dtype
+arr.dtype # dtype('float64')
+arr.astype(int) # array([1, 2, 3, 4])
+
+
+---
+# 다양한 배열 만들기
+# array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+np.zeros(10, dtype=int)
+
+
+# array([[1., 1., 1.], [1., 1., 1.], [1., 1., 1.]])
+np.ones((3, 3), dtype=float)
+
+
+# array([0, 2, 4, 6, 8, 10, 12, 14, 16, 18])
+np.arange(0, 20, 2)
+
+
+# array([0., 0.25, 0.5, 0.75, 1.])
+np.linspace(0, 1, 5)
+
+
+--- 
+# np.random
+# array([[난수, 난수], [난수, 난수]])
+np.random.random((2, 2))
+
+
+# 평균이 0이고 표준편차가 1인 데이터 중 랜덤값
+# 표준 정규 분포에서 추출한 랜덤값
+np.random.normal(0, 1, (2, 2))
+
+
+# 0이상 10미만의 랜덤한 값이 들어있는 2 x 4크기의 배열 저장
+array = np.random.randint(0,10,(2,4))
+```
+
+## 배열의 기초
+
+```python
+x2 = np.random.randint(10, size=(3, 4))
+# array([[2, 2, 9, 0], [4, 2, 1, 0], [1, 8, 7, 3]])
+
+x2.ndim # 차원 : 2 
+x2.shape # 배열의 형태 : (3, 4)
+x2.size # 배열의 크기 : 12
+x2.dtype # 배열의 타입 : dtype('int64')
+```
+
+
+
+# ---
 
 # 데이터 시각화
 
