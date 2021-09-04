@@ -607,16 +607,18 @@ country = pd.read_excel('country.xlsx')
 country.loc['china'] 
 
 # 행과 열을 슬라이싱
+	# 해당 끝 열까지 포함
 country.loc['japan' : 'korea', :'population']
 
 # 파이썬 스타일 정수 인덱싱
 country.iloc[0]
 
 # 파이썬 스타일 정수 슬라이싱
+	# 해당 끝 열을 안 포함
 country.iloc[1:3, :2]
 ```
 
-### DataFrame 새 데이터 추가와 수정  
+### DataFrame 새 데이터 추가와 수정 , 삭제
 
 ```python
 dataframe = pd.DataFrame(columns=['이름', '나이', '주소'])
@@ -627,6 +629,10 @@ dataframe.loc[1] = {'이름' : '철수', '나이' : '25', '주소':'인천'}
 
 # update
 dataframe.loc[1, '이름'] = '영희'
+
+# drop
+	# 삭제와 동시에 저장
+pd.drop(columns='year', inplace=True) 
 ```
 
 ![image-20210902021503664](C:\Users\joo\AppData\Roaming\Typora\typora-user-images\image-20210902021503664.png)
@@ -703,8 +709,11 @@ df.sort_values('col1')
 # 내림차순 정렬
 df.sort_values('col1', ascending=False)
 
+# 오름차순, 내림차순 정렬
+df.sort_Values(['col1', 'col2'], ascending=[False, True])
+
 # col2를 먼저 정렬 후 col1을 정렬
-df.sort_values(['col2', 'col1']) 
+df.sort_values(['col2', 'col1'])
 ```
 
 ### 조건으로 검색하기
@@ -1016,5 +1025,22 @@ ax.plot(df["order"],
 
 ax.set_xlabel("order")
 ax.set_ylabel("height(cm)")
+```
+
+## subplot
+
+```python
+import numpy as np
+import matplotlib
+
+x = [1,3,5,7,9]
+y = [2,4,6,8,10]
+
+plt.subplot(131)
+plt.plot(x, y)
+plt.subplot(132)
+plt.scatter(x, y)
+plt.subplot(133)
+plt.bar(x, y)
 ```
 
