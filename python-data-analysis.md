@@ -1043,4 +1043,3 @@ plt.scatter(x, y)
 plt.subplot(133)
 plt.bar(x, y)
 ```
-
