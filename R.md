@@ -905,52 +905,595 @@ pairs(USArrests, panel=panel.smooth, main="제목")
 biplot(US.prin, scale = 0)
 ```
 
-## **마이블로그 2팀 1차 스터디 발표**
+## 데이터 결합 및 요약  
 
-------
+### rbind  
 
-### 1️⃣ 스터디를 통해 이루고 싶었던 목표
+```R
+> customer1<-data.frame(id = c("c01","c02","c03","c04"), last_name = c("Lee","Kim","Choi","Park")) # customer1 변수 생성 (데이터 프레임 형)  
+> customer2<-data.frame(id = c("c05","c06","c07"),last_name = c("Lim","Bae","Kim")) # customer2 변수 생성 (데이터 프레임 형)
 
-- 기술 블로그 개설하기
-- 꾸준히 블로그에 글 올리기
-- 배운 것을 블로그에 정리하여, 학습에 대한 완성도 높이기
-- 학습 및 프로젝트 관련 기록 포트폴리오 작성
-- CS 공부
-- 다른 블로그를 참고하며 기술 블로그에 작성된 콘텐츠 알아보기
-- 혼자 공부한 내용을 다른 사람도 읽고 이해할 수 있도록 정리하기
+> customer1
+   id last_name
+1 c01       Lee
+2 c02       Kim
+3 c03      Choi
+4 c04      Park
+> customer2
+   id last_name
+1 c05       Lim
+2 c06       Bae
+3 c07       Kim  
 
-### 2️⃣ 4주 동안 스터디를 하며 이룬 것
+# 이를 rbind로 행 결합 가능  
+> id_name = rbind(customer1, customer2)
 
-- 편향적이지 않고 다양한 내용에 대한 꾸준한 블로그 포스팅
-- 공부한 것을 글로써 표현하는 능력 (글쓰는 능력 향상) 및 정보 검색 능력의 향상
-- 스터디원들을 통한 학습에 대한 자극
-- 개인 블로그, github 블로그 개설  및 주 1회 이상 블로그 포스팅
-- 개인 블로그 제작 프로젝트 및 기타 프로젝트 시작
+> id_name
+   id last_name
+1 c01       Lee
+2 c02       Kim
+3 c03      Choi
+4 c04      Park
+5 c05       Lim
+6 c06       Bae
+7 c07       Kim
+```
 
-### 3️⃣ 스터디를 진행하며 느낀 점
+### cbind
 
-### 😋 좋았어요
+```R
+> age_income<-data.frame(age = c(20, 25, 37, 40, 32, 45, 37), income = c(2500, 6400, 0, 7000, 3400, 3800, 5010))
 
-- 스터디원들끼리 블로그 댓글을 통해 소통할 수 있었다.
-- 스터디원들의 블로그를 통해 본인이 작성했던 내용에 대한 재학습  및 모르는 내용에 대한 학습이 이루어질 수 있었다.
-- 다른 스터디원들의 블로그 포스팅을 통한 포스팅 방법, 포스팅 주제 등을 참고 및 경험할 수 있었다.
-- 학습한 내용을 타인이 알 수 있게끔 설명하는 과정을 통해 학습의 완성도를 높일 수 있었다.
-- 꾸준히 무엇인가를 기록하고, 흔적으로써 성취에 대한 흔적을 남겼다.
-- 작문 및 정보 검색 능력 향상이 될 수 있는 기회였다.
+> age_income
+  age income
+1  20   2500
+2  25   6400
+3  37      0
+4  40   7000
+5  32   3400
+6  45   3800
+7  37   5010
 
-### 😔 아쉬웠어요
+> id_name
+   id last_name
+1 c01       Lee
+2 c02       Kim
+3 c03      Choi
+4 c04      Park
+5 c05       Lim
+6 c06       Bae
+7 c07       Kim
 
-- 새로운 것들을 많이 배우다보니, 모든 것을 소화할 수 없었고, 모든 것들에 대해 포스팅할 시간이 부족했다.
-- 정해진 스터디 목표를 다 이루지 못했다.
-- 코드가 삽입된 글을 작성해보지 못했다.
-- 같은 주제로 공부하고 의견을 교환하지 못하고, 개인 포스팅 주제가 달라서 아쉬웠다.
-- 엘리스 과정과 함께 진행하니 블로그 포스틍을 위해 시간을 내는게 힘들어 활동을 제대로 하지 못하였다.
+# cbind 이용해 열 결합  
+> customer<-cbind(id_name, age_income)
 
-### 4️⃣ 2차 스터디에서 시도해 보고 싶은 개선점 및 계획
+> customer
+   id last_name age income
+1 c01       Lee  20   2500
+2 c02       Kim  25   6400
+3 c03      Choi  37      0
+4 c04      Park  40   7000
+5 c05       Lim  32   3400
+6 c06       Bae  45   3800
+7 c07       Kim  37   5010
+```
 
-- 현재 주 2회 포스팅에서 주 1회 포스팅으로 스터디 참여의 벽을 낮춘다.
-- 스터디원 끼리 미니 프로젝트를 실시, 블로그에 프로젝트 관련 포스팅을 한다.
-- 스터디원들과 함께 하나의 주제를 선정하고, 그에 관한 포스팅을 시도한다.
-- 직접 제작한 블로그를 운영하고, IT 관련 다양한 주제에 대해 포스팅한다.
+### merge  
 
-스터디 회고 의견 공유: https://docs.google.com/document/d/1kqoTFcEtuEWGrXkAfGNfn4DigsARfB0pC_ZfMEKixvk/edit
+```R
+# 기준이 되는 특정 칼럼의 값이 같은 행끼리 묶어 병합하는 함수  
+merge(x, y, by, by.x, by.y, all=FALSE, all.x, all.y)
+"""
+options
+	x, y : 병합할 데이터 프레임  
+	by : 병합할 기준이 되는 칼럼  
+	by.x, by.y : 데이터프레임 x와 y에서 기준으로 사용할 칼럼의 이름이 서로 다른 경우
+				by.x와 by.y 인자를 통해 지정
+	all : 기준 칼럼에 대한 공통 값이 x 혹은 y 중 어느 한쪽에 없는 경우의 처리를 위한 		  인자
+		all=FALSE : x, y 모두가 공통 값을 가지고 있는 행만 병합
+		all=TRUE : x 혹은 y 중 공통 값을 가지고 있지 않은 행에 대해서는 
+				  NA로 값을 채운 뒤 x와 y의 전체 행이 병합됨
+	all.x, all.y : x 혹은 y 중 한쪽에 공통된 값이 없지만 해당 데이터의 모든 행이
+				 결과데이터에 포함되도록 하고자 할 때 사용
+		all.x=TRUE : x 데이터의 모든 행이 결과에 포함
+		all.y=TRUE : y 데이터의 모든 행이 결과에 포함  
+"""
+
+id_name<-data.frame(id = c("c01", "c02", "c03", "c04", "c05", "c06", "c07"),
++ last_name = c("Lee", "Kim", "Choi", "Park", "Lim", "Bae", "Kim"))
+
+id_number <- data.frame(id = c("c03", "c04", "c05", "C06", "c07", "c08", "c09"),
++ number = c(3, 1, 0, 7, 3, 4, 1))
+
+id_name
+   id last_name
+1 c01       Lee
+2 c02       Kim
+3 c03      Choi
+4 c04      Park
+5 c05       Lim
+6 c06       Bae
+7 c07       Kim
+
+id_number
+   id number
+1 c03      3
+2 c04      1
+3 c05      0
+4 C06      7
+5 c07      3
+6 c08      4
+7 c09      1  
+
+# id 칼럼 기준으로 공통된 값만 병합 (inner Join)
+merge(id_name, id_number, by = 'id')
+   id last_name number
+1 c03      Choi      3
+2 c04      Park      1
+3 c05       Lim      0
+4 c07       Kim      3
+
+# id 칼럼 기준으로 공통값 없어도 두 데이터의 모든 행을 병합 (Outer Join)
+merge(id_name, id_number, by = 'id', all = T)
+    id last_name number
+1  c01       Lee     NA
+2  c02       Kim     NA
+3  c03      Choi      3
+4  c04      Park      1
+5  c05       Lim      0
+6  c06       Bae     NA
+7  C06      <NA>      7
+8  c07       Kim      3
+9  c08      <NA>      4
+10 c09      <NA>      1
+
+# id 칼럼 기준으로 두 데이터를 병합, 이때 기준 칼럼에 공통값 없을 경우 id_name 데이터를 기준으로 병합 (Left Outer Join)
+	# id_name에 id_number을 붙이고 빈 값을 NA로 채움
+merge(id_name, id_number, by='id', all.x=T)
+   id last_name number
+1 c01       Lee     NA
+2 c02       Kim     NA
+3 c03      Choi      3
+4 c04      Park      1
+5 c05       Lim      0
+6 c06       Bae      7
+7 c07       Kim      3
+# id 칼럼 기준으로 두 데이터 병합, 이때 기준 칼럼에 공통값 없을 경우 id_number 데이터를 기준으로 병합 (Right Outer Join)
+	# id_number에 id_name을 붙이고 빈 값을 NA로 채움  
+> merge(id_name, id_number, by = 'id', all.y = T)
+   id last_name number
+1 c03      Choi      3
+2 c04      Park      1
+3 c05       Lim      0
+4 C06      <NA>      7
+5 c07       Kim      3
+6 c08      <NA>      4
+7 c09      <NA>      1  
+```
+
+### aggregate  
+
+```R
+# 특정 칼럼을 기준으로 데이터를 그룹지어 집계함수를 적용
+aggregate(x, by, FUN)
+aggregate(formula, data, FUN)
+
+"""
+options
+	x : R 객체
+	by : 데이터를 그룹화 할 값들의 리스트  
+	FUN : 적용할 함수
+
+	formula : 종속변수 ~ 독립변수의 형태로 
+			  <집계함수를 적용시킬 열 ~ 그룹화 할 기준이 되는 열> 형태로 입력
+	data : 연산을 수행할 데이터 프레임 
+"""
+
+# Q1. iris 데이터에서 종별 Sepal.Width의 평균 구하기
+> aggregate(Sepal.Width~Species, iris, mean)
+     Species Sepal.Width
+1     setosa       3.428
+2 versicolor       2.770
+3  virginica       2.974
+
+# Q2. iris 데이터에서 종별 Sepal.Width와 Petal.Width의 평균 구하기 
+> aggregate(cbind(Sepal.Width, Petal.Width)~Species, iris, mean)
+     Species Sepal.Width Petal.Width
+1     setosa       3.428       0.246
+2 versicolor       2.770       1.326
+3  virginica       2.974       2.026  
+```
+
+### table  
+
+```R
+# 범주형 변수에 대해서 각 범주별 도수를 알기 위해 도수분포표를 만들 때 이용  
+table(범주형변수) - 도수분포표 생성
+table(범주형변수1, 범주형변수2) - 두 변수 간 이원분할표 생성  
+
+# table 함수를 이용하여 범주형 변수 Class에 대한 도수분포표를 생성  
+> table(Titanic$Class)  
+1st  2nd  3rd Crew 
+8    8    8    8 
+
+# Class 변수에 따른 Survived 변수의 도수를 표 형태로 나타냄  
+> table(Titanic$Class, Titanic$Survived)
+       No Yes
+  1st   4   4
+  2nd   4   4
+  3rd   4   4
+  Crew  4   4
+```
+
+### prop.table  
+
+```R
+# 범주형 변수에 대한 상대도수(비율)을 알고자 할 때 이용  
+prop.table(table 객체)
+prop.table(table 객체, 1) # 행별 상대도수 파악
+prop.table(table 객체, 2) # 열별 상대도수 파악  
+
+# Age에 따른 Survived에 대한 비율을 파악  
+> prop.table(table(Titanic$Age, Titanic$Survived))
+          No  Yes
+  Child 0.25 0.25
+  Adult 0.25 0.25
+
+# 행 별 비율 파악  
+> prop.table(table(Titanic$Age, Titanic$Survived), 1)
+         No Yes
+  Child 0.5 0.5
+  Adult 0.5 0.5
+
+# 열 별 비율 파악  
+> prop.table(table(Titanic$Age, Titanic$Survived), 2)
+         No Yes
+  Child 0.5 0.5
+  Adult 0.5 0.5
+```
+
+### subset (조건)
+
+```R
+# 전체데이터에서 특정 조건을 만족하는 값들만 추춣할 때는 subset 함수를 사용한다.
+subset(data, subset, select=c(var1, var2, ...))
+"""
+options
+	data : 데이터를 추출할 벡터, 행렬, 데이터프레임
+	subset : 추출하고자 하는 데이터의 조건을 지정
+	select : 데이터프레임에서 특정 열만을 조회하고자 할 때 해당 열들을 c()로 묶어 지정
+"""
+
+# Q1. 내장데이터 iris에서 종(Species)가 setosa 이면서, Sepal.Length의 값이 5.5 초과인 데이터들의 Species와 Sepal.Length 변수 값만 조회해보자.
+> subset(iris,
++ subset = (Species == 'setosa' & Sepal.Length > 5.5), 
++ select = c(Species, Sepal.Length))
+   Species Sepal.Length
+15  setosa          5.8
+16  setosa          5.7
+19  setosa          5.7
+```
+
+## apply 계열 함수
+
+```R
+# 빠르고 쉽게 데이터 요약을 수행하여 원하는 정보를 확인
+```
+
+### apply  
+
+```R
+# apply는 데이터의 행 혹은 열 방향으로 주어진 함수를 한 번에 적용한 뒤
+# 그 결과를 벡터, 배열, 리스트로 반환하는 함수이다.
+
+apply(X, MARGIN, FUN)
+"""
+options
+	X : 배열 또는 행렬
+	MARGIN : MARGIN = 1 : 행 방향, MARGIN = 2 : 열 방향
+	FUN : 적용할 함수
+"""
+# 4행 3열로 이루어진 행렬을 만든 후에 각 행별로 max 값을 구해보자. 
+> a<-matrix(1:12, nrow=4, ncol=3)  
+ 
+> a
+     [,1] [,2] [,3]
+[1,]    1    5    9
+[2,]    2    6   10
+[3,]    3    7   11
+[4,]    4    8   12  
+ 
+> apply(a, 1, max)
+[1]  9 10 11 12
+
+
+# iris 데이터의 1~4열에 대해서 평균을 구해보자.  
+> apply(iris[,1:4], 2, mean)
+Sepal.Length  Sepal.Width Petal.Length  Petal.Width 
+    5.843333     3.057333     3.758000     1.199333
+```
+
+### lapply  
+
+```R
+# apply 함수는 벡터, 리스트, 표현식, 데이터 프레임 등에 함수를 적용하고, 그 결과를 리스트로 변환한다.  
+# lapply는 데이터프레임에 대해서는 열 방향으로 함수를 적용한다.
+> a <- c(1,2,3)
+> lapply(a, FUN = function(x){x^2})
+[[1]]
+[1] 1
+[[2]]
+[1] 4
+[[3]]
+[1] 9
+
+# 반환 값이 리스트임을 확인 가능
+class(lapply(a, FUN = function(x){x^2}))
+[1] "List"
+
+# 만약 리스트로 반환된 결과를 벡터로 변환하고 싶을 때 unlist 함수 이용
+b <- lapply(a, FUN=function(x){x^2})
+unlist(b)
+[1] 1 4 9  
+```
+
+### sapply  
+
+```R
+# sapply는 벡터, 리스트, 표현식, 데이터프레임 등에 함수를 적용하고, 그 결과를 벡터 혹은 행렬로 반환한다.
+# lapply와 마찬가지로 데이터프레임에 대해서는 열별로 함수를 적용한다.
+
+sapply(X, FUN. simplify=TRUE, ...)
+"""
+options
+	X : 벡터, 리스트, 표현식, 데이터프레임
+	FUN : 적용할 함수  
+	simplify : 단순화에 대한 여부를 지정하기 위한 인자
+		simplify=FALSE : 값을 설정하면 리스트가 반환됨
+"""
+
+
+"""
+sapply 함수의 결과에 따른 반환 형태  
+1. 변수마다 함수를 적용한 결과 값의 개수가 1개씩이면 벡터로 반환 
+2. 변수마다 함수를 적용한 결과 값의 개수가 1보다 크면 행렬로 반환  
+3. 함수를 적용한 결과 값의 개수가 변수마다 다르면 단순화할 수 없으므로 리스트로 반환  
+"""  
+
+# iris 데이터에서 각 컬럼에 summary 함수를 적용
+> sapply(iris, summary)
+$Sepal.Length
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  4.300   5.100   5.800   5.843   6.400   7.900 
+
+$Sepal.Width
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  2.000   2.800   3.000   3.057   3.300   4.400 
+
+$Petal.Length
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  1.000   1.600   4.350   3.758   5.100   6.900 
+
+$Petal.Width
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  0.100   0.300   1.300   1.199   1.800   2.500 
+
+$Species
+    setosa versicolor  virginica 
+        50         50         50 
+
+> class(sapply(iris, summary))
+[1] "list"
+```
+
+### mapply  
+
+```R
+# sapply의 확장 버전으로 여러 개의 리스트 또는 벡터로 주어진 인자를 받아 함수를 적용한 후 결과를 반환, 다수의 요소를 한 번에 적용이 가능  
+
+mapply(FUN, 인자1, 인자2, ... 인자n, ...)
+
+"""
+options
+	FUN : 적용할 함수  
+	인자n : 함수에 넣을 인자에 해당하는 벡터 혹은 리스트  
+"""  
+
+# rep 함수 이용 시
+> rep(1, 4)
+1 1 1 1
+> rep(2, 3)
+2 2 2
+> rep(3, 2)
+3 3
+> rep(4, 1)
+4  
+
+# mapply 사용 시
+mapply(rep, c(1:4), c(4:1))
+[[1]]
+[1] 1 1 1 1
+[[2]]
+[2] 2 2 2
+[[3]]
+[3] 3 3
+[[4]]
+[4] 4
+```
+
+### vapply  
+
+```R
+# vapply는 sapply와 유사하나 출력결과의 형태를 사용자가 직접 지정할 수 있다.  
+vapply(X, FUN, FUN, VALUE, ...)
+
+"""
+options
+	X : 벡터, 리스트, 표현식, 데이터프레임
+	FUN : 적용할 함수  
+	FUN.VALUE : 함수 실행 후 출력되는 값의 형태를 지정  
+"""  
+> test <- c(1:100)
+
+> test2 <- vapply(test, fivenum, c("Min"=0, "Q1"=0, "Median"=0, "Q3"=0, "Max"=0))
+
+> test2
+        [,1]
+Min      1.0
+Q1      25.5
+Median  50.5
+Q3      75.5
+Max    100.0
+```
+
+### tapply
+
+```R
+# 데이터를 특정 기준에 따라 그룹으로 나눈 뒤 각 그룹별로 함수를 적용하여 결과 반환  
+tapply(DATA, INDEX, FUN, ...)
+
+"""
+options
+	DATA : 벡터 (데이터프레임의 특정 열)
+	INDEX (기준) : 데이터를 그룹별로 나누기 위한 기준
+				팩터를 지정해야하며 팩터가 아닌 경우 팩터로 형 변환 이뤄짐
+				비교구문을 이용하여 그룹을 나누는 것도 가능  
+	FUN : 적용할 함수
+"""  
+
+# R의 googleVis 패키지에 있는 Fruits 데이터에서 과일종류 별 판매량의 평균을 구해보자.
+> head(Fruits)
+    Fruit Year Location Sales Expenses Profit       Date
+1  Apples 2008     West    98       78     20 2008-12-31
+2  Apples 2009     West   111       79     32 2009-12-31
+3  Apples 2010     West    89       76     13 2010-12-31
+4 Oranges 2008     East    96       81     15 2008-12-31
+5 Bananas 2008     East    85       76      9 2008-12-31
+6 Oranges 2009     East    93       80     13 2009-12-31
+ 
+# tapply 함수를 이용하여 과일종류별 판매량의 평균 산출  
+> tapply(Fruits$Sales, Fruits$Fruit, mean)
+  Apples  Bananas  Oranges 
+99.33333 86.66667 95.66667 
+
+# Fruits 데이터에서 Location이 West인 것과 아닌 것으로 그룹을 지정하여 Profit 평균 산출  
+> tapply(Fruits$Profit, Fruits$Location=="West", mean)
+   FALSE     TRUE 
+11.66667 21.66667 
+```
+
+# plyr  
+
+```R
+# 시험 사용 가능
+# 이 패키지의 함수들은 데이터를 분할 한 뒤 원하는 방향으로 특정 함수를 적용하고, 그 결과를 재조합하여 반환해줌  
+# 여러 함수로 처리해야 할 데이터의 분할, 함수 적용, 재조합을 한 번에 처리할 수 있기 때문에 매우 효율적이고 편리한 패키지  
+
+# ply 패키지의 함수들의 대부분은 '**ply' 형태로 이루어져 있으며, 첫 번째 글자는 입력 데이터의 형태를 의미하고 두 번째 글자는 출력 데이터의 형태를 의미한다. 
+"""
+a : array(배열)
+l : list(리스트)
+d : data frame(데이터프레임)
+_ : 아무런 출력을 하지 않음 (두 번째 자리인 출력 데이터타입 형태로만 지정 가능)
+첫 글자 r : 지정한 표현식을 반복하는 경우에 사용  
+첫 글자 m : 열별로 다중 인수 함수를 적용하여 결과를 반환할 때 사용  
+"""    
+```
+
+## adply  
+
+```R
+# adply는 배열을 입력 받아 함수를 적용한 후 데이터 프레임으로 반환해줌
+# 반드시 배열이 아니더라도 행렬과 같이 숫자 인덱스로 다룰 수 있는 데이터형(행렬, 데이터프레임)은 입력 데이터로 사용 가능  
+# adply는 apply와 다르게 결과 데이터를 데이터 프레임 형태로 반환하기 때문에 데이터 타입이 자동으로 바뀌는 문제가 발생하지 않음 
+
+adply(data, margins, fun)  
+"""
+options  
+	data : 입력 데이터 (행렬, 배열, 데이터 프레임)
+	margins : 함수를 적용할 방향 지정 
+		- margins=1 : 행 방향
+		- margins=2 : 열 방향
+		- margins=c(1,2) : 행과 열 방향 모두
+	fun : margin에 지정한 방향으로 적용할 함수  
+"""
+
+# R의 iris 데이터에서 Petal.Length 변수가 1.5 미만이면서 
+# Species 변수 값이 'setosa'인 조건을 만족하는 경우 '1', 그렇지 않은 경우 '0'을 부여한 칼럼을 생성하여, 원래의 iris 데이터와 함께 데이터프레임 형태로 출력해보자.  
+> adply(iris, 1,
++ function(row){ifelse(row$Petal.Length<1.5 & row$Species=="setosa", "1", "0")})
+    Sepal.Length Sepal.Width Petal.Length Petal.Width    Species V1
+1            5.1         3.5          1.4         0.2     setosa  1
+2            4.9         3.0          1.4         0.2     setosa  1
+3            4.7         3.2          1.3         0.2     setosa  1
+4            4.6         3.1          1.5         0.2     setosa  0
+5            5.0         3.6          1.4         0.2     setosa  1
+```
+
+## ddply  
+
+```R
+# ddply는 데이터프레임을 입력 받아 함수를 적용한 뒤 다시 데이터프레임으로 결과 반환함 
+# adply는 데이터의 행 혹은 열 방향으로 함수를 적용하지만, ddply는 .variables 인자에 지정한 변수들로 데이터를 그룹화한 후 그룹별로 함수를 적용하고, 결과 값을 반환한다.  
+ddply(data, .variables, ddply-func, fun)
+"""
+options 
+	data : 입력 데이터  
+	.variables : 데이터를 그룹화 할 기준이 되는 변수들을 입력  
+	ddply-func : ddply 내부 함수
+	fun : .variables에 지정한 변수들의 값이 같은 데이터별로 적용할 함수  
+"""
+
+
+
+# R의 iris 데이터에서 Species 별로 나머지 네 개 변수 
+# Q1 (Sepal.Length, Sepal.Width, Petal.Length, Petal.Width)의 평균을 출력해보자.  
+
+data(iris)
+library(plyr)
+ddply(iris, .(Species), function(sub){
+    data.frame(
+    	mean_SL=mean(sub$Sepal.Length), mean_SW=mean(sub$Sepal.Width),
+        mean_PL=mean(sub$Petal.Length), mean_PW=mean(sub$Petal.Width)
+    )
+})
+
+     Species mean_SL mean_SW mean_PL mean_PW
+1     setosa   5.006   3.428   1.462   0.246
+2 versicolor   5.936   2.770   4.260   1.326
+3  virginica   6.588   2.974   5.552   2.026
+
+
+# Q2 R의 iris 데이터에서 Species와 Petal.Length가 1.5 미만인지의 여부로 데이터를 그룹지어 네 개 변수 (Sepal.Length, Sepal.Width, Petal.Length, Petal.Width)의 평균을 출력해보자.  
+
+ddply(iris, .(Species, Petal.Length<1.5), function(sub){
+    data.frame(
+    	mean_SL=mean(sub$Sepal.Length), mean_SW=mean(sub$Sepal.Width),
+        mean_PL=mean(sub$Petal.Length), mean_PW=mean(sub$Petal.Width)    	
+    )
+})
+
+     Species Petal.Length < 1.5  mean_SL  mean_SW  mean_PL   mean_PW
+1     setosa              FALSE 5.107692 3.515385 1.588462 0.2730769
+2     setosa               TRUE 4.895833 3.333333 1.325000 0.2166667
+3 versicolor              FALSE 5.936000 2.770000 4.260000 1.3260000
+4  virginica              FALSE 6.588000 2.974000 5.552000 2.0260000
+
+
+```
+
+### ddply-func  
+
+```R
+위에서 살펴본 ddply의 사용 예는 ddply함수 내부에 임의의 사용자 정의 함수를 기입하여 연산을 수행했다. 하지만 ddply에서는 매번 사용자 정의 함수를 만들지 않고도 자주 쓰느 유용한 기능들을 편리하게 사용할 수 있도록 내부 함수들을 제공한다.  
+```
+
+#### transform  
+
+```R
+# 원본 데이터에 새로운 연산 결과를 담은 칼럼을 추가하여 함께 출력
+ddply(data, .variables, transform, 새로운 칼럼명=값 정의)
+
+# plyr 패키지의 내장데이터 baseball은 
+```
+
