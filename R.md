@@ -1485,7 +1485,7 @@ ddply(iris, .(Species, Petal.Length<1.5), function(sub){
 ### ddply-func  
 
 ```R
-위에서 살펴본 ddply의 사용 예는 ddply함수 내부에 임의의 사용자 정의 함수를 기입하여 연산을 수행했다. 하지만 ddply에서는 매번 사용자 정의 함수를 만들지 않고도 자주 쓰느 유용한 기능들을 편리하게 사용할 수 있도록 내부 함수들을 제공한다.  
+위에서 살펴본 ddply의 사용 예는 ddply함수 내부에 임의의 사용자 정의 함수를 기입하여 연산을 수행했다. 하지만 ddply에서는 매번 사용자 정의 함수를 만들지 않고도 자주 쓰는 유용한 기능들을 편리하게 사용할 수 있도록 내부 함수들을 제공한다.  
 ```
 
 #### transform  
@@ -1494,6 +1494,232 @@ ddply(iris, .(Species, Petal.Length<1.5), function(sub){
 # 원본 데이터에 새로운 연산 결과를 담은 칼럼을 추가하여 함께 출력
 ddply(data, .variables, transform, 새로운 칼럼명=값 정의)
 
-# plyr 패키지의 내장데이터 baseball은 
+# plyr 패키지의 내장데이터 baseball은 1871년부터 2007년까지 총 1228명의 미국 야구선수들의 타격에 대한 정보가 저장된 데이터이다. 각 선수는 id 컬럼으로 구분되어 있으며, 데이터는 총 22개의 변수와 21699개의 행으로 이루어져 있다. baseball 데이터로 ddply 내부 함수들에 대한 실습을 진행해보자.  
+
+# 'g' 칼럼은 각 선수가 해당 년도에 출전한 게임 수를 나타낸다. 원본 데이터에 각 선수의 연평균 출전횟수를 나타내는 'avgG' 칼럼을 추가해보자. 이 문제를 해결하기 위해 먼저 제이터를 id 기준으로 그룹화한 뒤, 각 선수의 출전횟수 총함 (sum(g))을 경기에 출전한 연도 수로 나누어준다.  
+ddply(baseball, .(id), transform, avgG=sum(g)/length(year))
+```
+
+#### mutate  
+
+```R
+mutate는 transform을 개선시킨 함수로, 원본 데이터에 새로운 연산 결과를 담은 칼럼을 추가할 수 있을 뿐만 아니라, 같은 코드 내에서 앞서 추가한 컬럼을 뒤에 추가하는 칼럼에서 바로 참조할 수 있다.
+
+즉 칼럼 1 생성,
+칼럼 2 생성이 아니라
+
+칼럼 1 생성 (칼럼 1 바탕으로 칼럼 2 생성) 원라인이 가능  
+
+# transform 예제에서와 마찬가지로 'avgG' 칼럼을 추가하는데, 이번에는 mutate 함수를 이용해보자. 또한 새로 생성한 'avgG' 칼럼 값을 반올림한 'avgG_RND' 칼럼도 함께 생성하자.
+ddply(baseball, .(id), mutate, avgG=sum(g)/length(year), avgG_RND=round(avgG))
+```
+
+#### summarise  
+
+```R
+summarise는 데이터의 요약 정보를 만들어주는 함수이다. transform과 mutate는 기존 데이터에 새로운 칼럼을 추가한 데이터 프레임을 생성해주지만, summarize 함수는 **지정한 계산 결과만 담은** 데이터프레임을 생성한다.  
+
+# 선수별로 1871~2007년 사이 기간 동안 출전한 경기 중 가장 마지막에 출전한 경기의 연도 수를 구해 'year_fin' 변수에 저장하고, 관련 정보들만 뽑아서 요약해보자. 이를 위해 먼저 데이터를 id로 그룹화한 뒤, year변수의 최댓값을 계산하여 'year_fin' 변수에 부여한다.  
+ddply(baseball, .(id), summarise, yaer_fin=max(year))
+            id yaer_fin
+1    aaronha01     1976
+2    abernte02     1972
+3    adairje01     1970
+4    adamsba01     1926
+5    adamsbo03     1959
+
+# baseball 데이터의 team 변수는 선수의 소속팀을 의미하고, hr은 홈런의 수를 의미한다. ddply의 summarise를 활용해 팀별 홈런 수의 합을 구하고, hr_sum 변수에 출력해보자.  
+ddply(baseball, .(team), summarise, hr_sum=sum(hr))
+    team hr_sum
+1    ALT      0
+2    ANA    134
+3    ARI    809
+4    ATL   3272
+5    BAL   4243
+```
+
+#### subset
+
+```R
+# subset은 데이터의 그룹별로 조건을 만족하는 행들만 출력해준다. 또한 select 인자를 사용해 원하는 칼럼만 지정하여 출력할 수도 있다.  
+ddply(data, variables, subset, 조건, select=c(출력할 변수, 변수2, ... 변수n))
+
+# subset을 이용하여 선수별로 마지막 경기 출전년도에 해당하는 행들의 일부 열(id, year, stint, team, lg, g)들만 추출해보자. 아래의 R 코드는 먼저 id로 데이터를 그룹화한 뒤, year값이 선수별 year변수의 최댓값과 같은 행만 subset으로 추출하는 방법이다.  
+ddply(baseball, .(id), subset, year==max(year), select=c("id", "year", "stint", "team", "lg", "g"))
+            id year  stint team lg  g
+1    aaronha01 1976     1  ML4 AL  85
+2    abernte02 1972     1  KCA AL  45
+3    adairje01 1970     1  KCA AL   7
+4    adamsba01 1926     1  PIT NL  19
+5    adamsbo03 1959     1  CHN NL   3
+```
+
+# dplyr  
+
+```R
+dplyr 패키지는 R에서 데이터 전처리를 할 때 가장 많이 사용되는 패키지중 하나이다. 데이터의 일부 추출, 새로운 변수 생성, 다른 데이터와 병합 등의 다양한 기능을 지원한다.  
+
+dplyr에서 많이 사용되는 주요 함수들은 %>% 기호로 연결하여 중첩사용이 가능하다.  
+```
+
+## filter
+
+```R
+# filter 함수는 데이터에서 조건에 맞는 행들을 추출해주며, 사용방법은 아래와 같다.  
+데이터프레임 이름 %>% filter(조건)
+
+# MASS 패키지에서 제공하는 Cars93 데이터는 1993년 미국에서 판매된 93대의 자동차에 대한 정보를 담고 있으며, 27개의 변수로 이루어져 있다. Cars93 데이터에서 제조사가 "Audi" 혹은 "BMW" 이면서, 엔진크기가 2.4 이상인 행들만 추출해보자.  
+Cars93 %>% filter((Manufacturer=="Audi" | Manufacturer=="BMW") & EngineSize>=2.4)
+```
+
+## select  
+
+```R
+# select 함수는 데이터에서 특정 열만을 추출해주며, 사용방법은 아래와 같다.  
+데이터프레임 이름 %>% select(선택할 변수명, ~제외할 변수명)
+
+# Cars93 데이터의 모델번호, 종류, 가격 변수들만 추출해보자.  
+# 사용할 select 함수가 dplyr의 함수임을 명시해주기
+Cars93 %>% dplyr::select(Model, Type, Price)
+
+# 제조사가 Chevolet 혹은 Volkswagen 이면서, 가격이 10이상인 행 들의 제조사, 모델, 종류, 가격 변수들만 추출해보자.  
+Cars93 %>%
+filter((Manufacturer=="Chevrolet" | Manufacturer=="Volkswagen") & Price>=10)%>%
+dplyr::select(Manufacturer, Model, Type, Price)
+```
+
+## group_by 와 summarise  
+
+```R
+# group_by는 지정한 변수들을 기준으로 데이터를 그룹화하는 함수이며, summarise 는 통계치를 계산해주는 함수로 두 함수는 같이 사용되는 경우가 많다. 
+데이터프레임이름 %>% group_by(그룹화 할 기준 변수1, 기준 변수2, ... 기준 변수n)
+%>% summarise(새로운 변수명=계산식)  
+
+"""
+options (summarise 함수 내부)
+	mean : 평균 산출  
+	median : 중앙값 산출  
+	sd : 표준편차 산출  
+	min / max : 최솟값 / 최댓값 산출  
+	sum : 함계 산출
+	n : 행의 개수 세기  
+"""
+
+# Cars93 데이터의 제조사별 가격의 평균가 무게의 최댓값을 산출한 뒤 변수명을 각각 mean_Price, max_Weight로 지정하여 출력해보자.  
+# ddply(baseball, .(id), summarise, yaer_fin=max(year))와 같음
+Cars93 %>% group_by(Manufacturer) %>%
+summarise(mean_Price=mean(Price), max_Weight=max(Weight))
+
+# 종류와 에어백을 기준으로 데이터를 그룹화한 뒤, 자동차 평균 무게를 구해보자.  
+Cars93 %>% group_by(Type, AirBags) %>% summarise(mean_Weight=mean(Weight))
+```
+
+## mutate  
+
+```R
+# mutate는 데이터에 새로운 파생변수를 추가해주는 함수이며, 사용법은 아래와 같다.  
+데이터프레임 이름 %>% mutate(새로운 변수명 = 값)  
+
+# Cars93 데이터에서 가격(Price 변수, 1000달러 기준)이 12미만이면 "low", 12이상 23미만이면 "middle", 23이상이면 "high" 값을 가지는 Pr_level 변수를 생성한 뒤, 모델, 가격, 새로운 파생변수 Pr_level만 출력해보자.  
+Cars93 %>% mutate(Pr_level=ifelse(Price < 12, "low",
+                                 ifelse(Price >= 12 & Price <23, "middle", "high"))) %>%
+dplyr::select(Model, Price, Pr_level)
+            Model Price Pr_level
+1         Integra  15.9   middle
+2          Legend  33.9     high
+3              90  29.1     high
+4             100  37.7     high
+5            535i  30.0     high
+```
+
+## arange  
+
+```R
+# arrange는 특정 열 기준으로 데이터를 정렬해주는 함수이며, 사용법은 아래와 같다.  
+데이터프레임 이름 %>% arrange(정렬 기준변수) # 오름차순 정렬 
+데이터프레임 이름 %>% arrange(desc(정렬 기준변수)) # 내림차순 정렬  
+
+# Cars93 데이터에서 종류가 "Midsize" 혹은 "Small"인 데이터의 Model, Type, Weight, Price 변수들만 추출한 뒤, 종류(Type) 별로 Weight 변수값들이 Weight의 중앙값보다 작은 경우는 "low", 중앙값 이상인 경우 "high" 값을 갖는 Weight_lv 변수를 생성하라. 그리고, Price 변수를 기준으로 데이터를 오름차순 정렬하여 출력하여라.  
+Cars93 %>% 
+filter(Type %in% c("Midsize", "Small")) %>% 
+dplyr::select(Model, Type, Weight, Price) %>% 
+group_by(Type) %>% 
+mutate(Weight_lv=ifelse(Weight<median(Weight), "low", "high")) %>%  
+arrange(Price)
+
+   Model   Type  Weight Price Weight_lv
+   <fct>   <fct>  <int> <dbl> <chr>    
+ 1 Festiva Small   1845   7.4 low      
+ 2 Excel   Small   2345   8   high     
+ 3 323     Small   2325   8.3 low      
+ 4 Metro   Small   1695   8.4 low      
+ 5 Justy   Small   2045   8.4 low 
+```
+
+## {left, right, inner, full}_join  
+
+```R
+# join이란 두 개 이상의 테이블을 특정 변수를 기준으로 결합하는 것을 의미한다.  
+# R 기본 함수인 merge와 같은 역할을 한다.  
+ADP 실기 책 100쪽 그림 참고
+
+# 카페에서 판매하는 메뉴_코드(code), 이름(name)을 담은 데이터 "NAME" 과 메뉴 코드, 해당 메뉴의 가격을 담은 데이터 "PRICE"를 생성해보자. 그 후 각 메뉴의 고유코드를 의미하는 code 변수를 기준으로 left_join, right_join, inner_join, full_join을 수행하여 결과를 확인해보자.  
+NAME<-data.frame(code=c("A01", "A02", "A03"),
+                name=c("coffee", "cake", "cookie"))
+NAME
+  code   name
+1  A01 coffee
+2  A02   cake
+3  A03 cookie
+
+PRICE<-data.frame(code=c("A01", "A02", "A04"),
+                 price=c(3000, 4000, 3000))
+PRICE
+  code price
+1  A01  3000
+2  A02  4000
+3  A04  3000
+
+# left_join, 나머지 병합도 이름만 바꿔주면 된다.  
+cafe_lift <- left_join(NAME, PRICE, by="code")
+```
+
+## bind_rows 와 bind_cols  
+
+```R
+# bind_rows는 데이터의 행들을 이어 붙여 결합하는 함수이며, R의 기본 함수 rbind와 같은 역할을 한다. 하지만 rbind는 열 이름이 다르면 제대로 데이터가 결합되지 않는 반면, bind_rows는 이름이 다르더라도 빈자리는 NA값으로 채워지면서 데이터가 결합된다.  
+# 또한 bind_rows 함수 내 id 인자를 사용할 경우, 각 행이 결합 당시 몇 번째 데이터 원천으로부터 온 것인지를 확인할 수 있으며 연산속도도 rbind에 비해 매우 빠르다.  
+
+# 위 예제에서 생성한 NAME 데이터와 PRICE 데이터를 {base} 패키지의 rbind 함수와 [dplyr] 패키지의 bind_rows 함수를 이용해 행 기준으로 결합해보고 그 결과를 확인해보자.  # base::rbind 함수를 이용해 데이터 결합  
+rbind(NAME, PRICE) # 에러 발생  
+
+# dplyr::bind_rows 함수를 이용해 데이터 결합 
+bind_rows(NAME, PRICE)
+  code   name price
+1  A01 coffee    NA
+2  A02   cake    NA
+3  A03 cookie    NA
+4  A01   <NA>  3000
+5  A02   <NA>  4000
+6  A04   <NA>  3000
+
+# 카페에서 판매되는 메뉴의 고유코드와 이름을 담음 데이터 A, B, C를 생성하고 세 개의 데이터를 행으로 결합해보자. 또한 각 행이 어떤 데이터로부터 결합된 것인지를 나타내는 id열도 함께 나타내보자.  
+A<-data.frame(code=c(1,2), name=c("coffee", "cake"))
+B<-data.frame(code=c(3,4), name=c("cookie", "juice"))
+C<-data.frame(code=5, name="bread")
+
+cafe_bind<-bind_rows(A,B,C, .id="id")
+cafe_bind
+  id code   name
+1  1    1 coffee
+2  1    2   cake
+3  2    3 cookie
+4  2    4  juice
+5  3    5  bread
+
+# id열을 통해 1, 2 행의 원천은 첫 번째 데이터, 3, 4행의 원천은 두 번째 데이터,
+# 5행의 원천은 세 번째 데이터임을 알 수 잇음 
+
+# bind_cols 함수는 bind_rows 함수와 다르게 cbind 함수와 마찬가지로 결합할 데이터들의 행 개수가 동일해야 하며, 그렇지 않을 경우 에러가 발생한다.  
 ```
 
