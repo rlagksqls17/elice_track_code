@@ -563,6 +563,8 @@ A.add(B, fill_value=0)
 
 ## DataFrame  
 
+## 데이터 확인
+
 ```python
 gdp = pd.Series(gdp_dict)
 country = pd.DataFrame({
@@ -574,6 +576,10 @@ country = pd.DataFrame({
 ![image-20210902015635580](C:\Users\joo\AppData\Roaming\Typora\typora-user-images\image-20210902015635580.png)
 
 ```python
+# 전체 데이터를 볼 수 있도록 확인
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
+
 # index 값 확인  
 country.index
 
@@ -599,6 +605,16 @@ country.to_excel('country.xlsx')
 country = pd.read_csv("./country.csv")
 country = pd.read_excel('country.xlsx')
 ```
+
+### 결측치 확인  
+
+```python
+df.isnull().sum()
+```
+
+
+
+## 데이터 전처리
 
 ### 인덱싱과 슬라이싱  
 
@@ -839,7 +855,26 @@ df.pivot_table(
 
 ![image-20210902174752245](C:\Users\joo\AppData\Roaming\Typora\typora-user-images\image-20210902174752245.png)
 
+## 데이터 샘플링
 
+```python
+# 30개의 표본을 뽑는다. (이것을 47번 반복한다.)
+
+# 표본을 저장할 리스트
+sample_list = []
+
+for count in range(0, 47):
+    """
+    DataFrame.sample(
+        n = 추출할 표본 개수
+        replace = 복원추출 여부 (불리언 값)
+        axis = 0: 인덱스 기준, 1: 칼럼 기준
+    )
+    """
+    sample_list.append(main_df.sample(n = 30, replace = False, axis=0))
+
+len(sample_list)
+```
 
 
 
