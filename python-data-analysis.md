@@ -640,15 +640,26 @@ country.iloc[1:3, :2]
 dataframe = pd.DataFrame(columns=['이름', '나이', '주소'])
 
 # add
-dataframe.loc[0] = ['임원균', '26', '서울']
-dataframe.loc[1] = {'이름' : '철수', '나이' : '25', '주소':'인천'}
+1. dataframe.loc[0] = ['임원균', '26', '서울']
+2. dataframe.loc[1] = {'이름' : '철수', '나이' : '25', '주소':'인천'}
+3. col2 = ['강간검거율', '강도검거율', '살인검거율', '절도검거율', '폭력검거율']
+crime_anal_norm[col2] = crime_anal[col2]
+crime_anal_norm.head()
 
 # update
-dataframe.loc[1, '이름'] = '영희'
+1. dataframe.loc[1, '이름'] = '영희'
+2. crime_anal.rename(columns = {
+                            '강간 발생' : '강간',
+                            '강도 발생' : '강도',
+                            '살인 발생' : '살인',
+                            '절도 발생' : '절도',
+                            '폭력 발생' : '폭력',                             
+                             }, inplace=True)
 
-# drop
-	# 삭제와 동시에 저장
-pd.drop(columns='year', inplace=True) 
+# delete
+	# 삭제와 동시에 저장 
+1. del crime_anal['폭력 검거']
+2. pd.drop(columns='year', inplace=True)
 ```
 
 ![image-20210902021503664](C:\Users\joo\AppData\Roaming\Typora\typora-user-images\image-20210902021503664.png)
@@ -731,6 +742,15 @@ df.sort_Values(['col1', 'col2'], ascending=[False, True])
 # col2를 먼저 정렬 후 col1을 정렬
 df.sort_values(['col2', 'col1'])
 ```
+
+### .value_counts
+
+```python
+## 상위 10개 행을 출력
+df['value'].value_counts([:10]) ? 
+```
+
+
 
 ### 조건으로 검색하기
 
@@ -845,15 +865,127 @@ df["A"]["1"]
 ### pivot_table
 
 ```python
-# 데이터에서 필요한 자료만 뽑아서 요약 가능
+# pivot table 기본 사용법
+df = pd.read_excel("/content/drive/MyDrive/학습 자료/Sample data/02. sales-funnel.xlsx")  
+df.head()  
+	Account	Name		     Manager	   Product		Price	Status
+0	714466	Trantow-Barrows	  Debra Henley	CPU			30000	 presented
+1	714466	Trantow-Barrows	  Debra Henley	Software	 10000	 presented
+2	714466	Trantow-Barrows	  Debra Henley	Maintenance	 5000	 pending
+4	146832	Kiehn-Spinka	  Debra Henley	CPU			65000	won
 
-df.pivot_table(
-	index='sex', columns='class', values='survived',
-    aggfunc=np.mean # 평균값으로 채운다
-)
+
+# 위 데이터에서 Name 항목으로만 정렬할 때 pivot_table을 사용한다.  
+# 그러면 다음 처럼 Name 컬럼이 index가 되고, 특별히 지정하지 않았다면 숫자형 데이터 컬럼들이 남는다.  
+# 그리고 중복된 Name의 항목은 하나로 합쳐지고 value들은 평균을 갖게 된다.
+pd.pivot_table(df, index=["Name"])
+				Account	Price	Quantity
+Name			
+Barton LLC		740150	35000	1.000000
+Herman LLC		141962	65000	2.000000
+Jerde-Hilpert	412290	5000	2.000000
+Keeling LLC		688981	100000	5.000000
+Kiehn-Spinka	146832	65000	2.000000
+Koepp Ltd		729833	35000	2.000000
+Kulas Inc		218895	25000	1.500000
+Purdy-Kunde		163416	30000	1.000000
+Stokes LLC		239344	7500	1.000000
+Trantow-Barrows	714466	15000	1.333333
+
+# 인덱스 여러개 지정 가능
+pd.pivot_table(df, index=["Name", "Rep", "Manager"])
+
+# 특정 Value 지정 가능
+pd.pivot_table(df, index=["Manager", "Rep"], values=["Price"])
+
+# 데이터에서 필요한 자료만 뽑아서 요약 가능
+pd.pivot_table(df, index=["Manager", "Rep"], values=["Price"], aggfunc=np.sum)
+
+								Price
+Manager			Rep	
+Debra Henley	Craig Booker	  80000
+			   Daniel Hilton	 115000
+			   John Smith	     40000
+Fred Anderson	Cedric Moss	      110000
+			   Wendy Yule	     177000
+    
+# 두 개의 함수를 적용 가능    
+pd.pivot_table(df, index={"Manager", "Rep", "Product"}, 
+               values=["Price", "Quantity"],
+               aggfunc=[np.sum, np.mean], fill_value=0, margins=True)
+
+										 sum			    mean
+										 Price	Quantity	Price		  Quantity
+Rep		     Product		Manager				
+Cedric Moss	  CPU			Fred Anderson	95000	3		47500.000000	1.500000
+		     Maintenance	Fred Anderson	5000	1		5000.000000		1.000000
+		     Software		Fred Anderson	10000	1		10000.000000	1.000000
+Craig Booker  CPU			Debra Henley	65000	2		32500.000000	1.000000
+			 Maintenance	Debra Henley	5000	2		5000.000000		2.000000
+			 Software		Debra Henley	10000	1		10000.000000	1.000000
+Daniel Hilton CPU			Debra Henley	105000	4		52500.000000	2.000000
+			 Software	    Debra Henley	10000	1		10000.000000	1.000000
+John Smith	 CPU			Debra Henley	35000	1		35000.000000	1.000000
+			Maintenance		Debra Henley	5000	2		5000.000000		2.000000
+Wendy Yule	 CPU			Fred Anderson	165000	7		82500.000000	3.500000
+			Maintenance		Fred Anderson	7000	3		7000.000000		3.000000
+			Monitor			Fred Anderson	5000	2		5000.000000		2.000000
+All										  522000   30	   30705.882353	    1.764706
 ```
 
-![image-20210902174752245](C:\Users\joo\AppData\Roaming\Typora\typora-user-images\image-20210902174752245.png)
+
+
+```python
+def login():
+    """
+    POST
+    : loginPage.js에서 들어오는 데이터 (아이디, 비밀번호)를 받고,
+      MySQL에 사용자가 입력한 아이디와 비밀번호가 있는지 조회하고 비교
+      아이디가 MySQL에서 존재하지 않을 경우 notFoundId 메세지를 던져줌
+      입력된 비밀번호가 MySQL의 비밀번호와 다를 경우 notFoundPassword 메세지 던져줌
+      조회 성공 시 토큰을 넘겨 줌
+    """
+
+    req = request.get_json() 
+    username = req.get('username')
+    password = req.get('password')
+
+    user_data = User.query.filter(User.userid == username).first()
+ 
+    if not user_data:
+        abort(400)
+
+    if not check_password_hash(user_data.password, password):
+        abort(401)
+
+    data_to_encode = {"username" : username, "password" : password}
+    token = jwt.encode(data_to_encode, encryption_secret, algorithm=algorithm) 
+    
+    return jsonify({"access_token" : token}), 200
+```
+
+```react
+fetch('/api/login', {
+            method: 'post',
+            headers: {
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(opts)
+        }).then(r => r.json())
+          .then(res => {
+              if (res.access_token){
+                  /*
+                  로그인 성공 시 사용자 ID를 전역 Redux State로 patch함
+                  */
+                    dispatch({
+                        type: "SETID",
+                        payload: username
+                    });
+                    login(res)
+              }
+```
+
+
 
 ## 데이터 샘플링
 
@@ -874,6 +1006,19 @@ for count in range(0, 47):
     sample_list.append(main_df.sample(n = 30, replace = False, axis=0))
 
 len(sample_list)
+```
+
+## 데이터 정규화  
+
+```python
+from sklearn import preprocessing 
+
+col = ['강간', '절도', '살인', '절도', '폭력']
+
+x = crime_anal[col].values
+
+x_scaled = preprocessing.MinMaxScaler().fit_transform(x.astype(float))
+crime_anal_norm = pd.DataFrame(x_scaled, columns=col, index=crime_anal.index)
 ```
 
 
@@ -1078,3 +1223,4 @@ plt.scatter(x, y)
 plt.subplot(133)
 plt.bar(x, y)
 ```
+
