@@ -1,4 +1,4 @@
-# R  for data analysis  
+R  for data analysis  
 
 ## 패키지
 
@@ -776,6 +776,17 @@ repeat{
 """  
 ```
 
+## 데이터 탐색
+
+### 개수 확인  
+
+```R
+nrow(data) # 행 개수 확인 
+dim(data) # 데이터의 개수 확인
+```
+
+
+
 ## 데이터 변환  
 
 ### 파생변수 추가
@@ -1382,6 +1393,86 @@ options
 11.66667 21.66667 
 ```
 
+# R을 이용한 표본 추출
+
+## 단순임의추출
+
+```R
+# 전체 데이터에서 데이터를 선택할 확률을 모두 동일하게 하여 표본을 추출하는 방법  
+
+# 복원 추출 : 한 번 선택한 표본을 다시 추출  
+# 비복원추출 : 한 번 선택된 표본은 다시 추출 불가  
+
+sample(x, size, replace=FALSE, prob=NULL)
+"""
+options  
+  x : 표본을 추출할 벡터  
+  size : 표본의 크기  
+  replace : 복원 추출 여부를 지정  
+	replace=TRUE : 복원 추출
+	replace=FALSE : 비복원 추출  
+  prob : 데이터를 뽑을 때의 가중치 지정  
+		예를 들어, prob=c(2, 4, 6)을 지정하면 
+		첫 번째 데이터가 뽑힐 확률은 20%  
+		두 번째 데이터가 뽑힐 확률은 40%
+		세 번째 데이터가 뽑힐 확률은 60%
+"""
+
+# iris 데이터로 분석을 진행하기 위해 전체 데이터의 7:3 비율로 training data와 test data를 추출한 뒤 새로운 변수에 저장해보자. (단순 임의 추출 사용)  
+
+# iris 데이터 행의 개수에서 70%에 해당하는 행번호를 랜덤으로 추출  
+# nrow(): 데이터의 행 개수를 산출해주는 함수  
+idx <- sample(1:nrow(iris), nrow(iris)*0.7, replace=FALSE)
+
+# 추출한 행번호를 이용하여 training 데이터와 test 데이터 생성
+training<-iris[idx,]
+test<-iris[-idx,]
+```
+
+## 층화 임의 추출  
+
+```R
+특정 데이터가 여성 70% 남성 30 % 로 구성되어 있다고 가정해보자.  
+각 계층을 고루 대표할 수 있도록 표본을 추출하기 위해서는 여성과 남성 집단에 대해 0.7:0.3 의 비율로 데이터를 뽑아야 한다.  
+이처럼 여성과 남성이라는 계층별로 표본을 추출하는 것을 층화 임의 추출이라고 한다.  
+
+strata(data, stratanames=NULL, size, method=c(), pik, description=FALSE)
+"""
+options 
+  data : 표본을 추출할 데이터프레임 또는 행렬  
+  stratanames : 데이터에서 계층을 구분하는 변수들 (여러 개일 경우 벡터로 나열)
+  size : 각 계층에서 추출할 데이터의 개수  
+  method : 
+	srswor : 비복원 단순 임의 추출  
+	srswr : 복원 단순 임의 추출
+	poisson : 포아송 추출 
+    systematic : 계통 추출
+  pik : 데이터를 표본에 포함시킬 확률  
+  description : 표본크기와 모집단 크기를 추출할지의 여부 (TRUE / FALSE)  
+"""
+
+# strata 함수를 통해 층화 임의 추출을 수행하여 얻어진 데이터는 getdata 함수를 통해 확인할 수 있다.   
+# 즉 getdata는 원본 데이터에서 표본 추출을 통해 얻어진 데이터를 출력해준다.  
+getdata(data, m)
+
+# iris 데이터에서 Species가 setosa인 데이터를 20개, versicolor 인 데이터를 15개, versinica인 데이터를 15개 씩 층화 임의 추출을 사용해 추출해보자.
+""" 
+strata 함수를 이용하려면 samplig 패키지를 설치해야 함.
+하지만 데이터 분석 기사에서 sampling 함수를 사용할 수 없으니 단순임의추출을 통해서 층화임의 추출을 표현해보도록 하겠음 
+"""  
+setosa <- iris %>% filter(Species=="setosa")
+versicolor <- iris %>% filter(Species=="versicolor")
+virginica <- iris %>% filter(Species=="virginica")
+
+setosa_sample <- setosa[sample(1:nrow(setosa), 20, replace=TRUE),]
+versicolor_sample <- versicolor[sample(1:nrow(versicolor), 15, replace=TRUE),]
+virginica_sample <- virginica[sample(1:nrow(virginica), 15, replace=TRUE),]  
+
+iris_sample <- bind_rows(setosa_sample, versicolor_sample, virginica_sample)
+```
+
+
+
 # plyr  
 
 ```R
@@ -1723,4 +1814,96 @@ cafe_bind
 # bind_cols 함수는 bind_rows 함수와 다르게 cbind 함수와 마찬가지로 결합할 데이터들의 행 개수가 동일해야 하며, 그렇지 않을 경우 에러가 발생한다.  
 
 ```
+
+# reshape2  
+
+## melt  
+
+```R
+# melt 함수는 여러 변수로 이루어진 데이터를 id, vriables, value의 세 칼럼으로만 이루어진 데이터로 변환해준다. 즉 기존의 변수 명이 variables의 값이 되어 행으로 존재하며, 각 측정변수에 대한 값은 value에 저장된다. 
+
+# melt 함수를 사용해 변환된 데이터를 이용하면 variable 별 value의 통계값을 매우 편리하게 사용할 수 있다.  
+
+# emlt 함수는 데이터프레임, 배열, 리스트에 적용할 수 있다. 가장 많이 사용되는 데이터 타입인 데이터프레임에 적용할 때의 melt 함수 사용 및 활용법은 아래와 같다.  
+
+melt(data, id.vars, measure.vars, na.rm=FALSE)  
+
+"""
+options  
+  data : melt 함수를 적용할 데이터 프레임  
+  id.vars : 데이터를 변형할 때 기준이 되는 식별자 컬람들  
+  measure.vars : 식별자가 아닌 측정치 칼럼들  
+			    (지정하지 않을 경우, 
+					id.vars에 지정하지 않은 모든 칼럼이 measure.vars로 사용됨)
+  na.rm : NA 값이 포함된 행을 삭제할지의 여부 (na.rm=FALSE이면, 
+			NA가 포홤된 행을 제거하지 않음)
+"""
+
+# R의 airquality는 1973년 5월 ~ 9월 동안 뉴욕의 일일 대기 질 측정량에 대한 데이터로, 153개의 행과 6개의 변수로 이루어져 있다. 6개의 변수 중 Month와 Day를 식별자로 두고, 나머지 변수와 변수 값은 모든 데이터 내에 포함되는 형태로 변화해보자.  
+install.packages("reshape2")
+library("reshape2")
+
+> head(airquality, 5)
+  Ozone Solar.R Wind Temp Month Day
+1    41     190  7.4   67     5   1
+2    36     118  8.0   72     5   2
+3    12     149 12.6   74     5   3
+4    18     313 11.5   62     5   4
+5    NA      NA 14.3   56     5   5
+> head(melt(airquality, id.vars=c("Month", "Day"), na.rm=T), 5)
+  Month Day variable value
+1     5   1    Ozone    41
+2     5   2    Ozone    36
+3     5   3    Ozone    12
+4     5   4    Ozone    18
+6     5   6    Ozone    28
+```
+
+## dcast  
+
+```R
+cast 함수는 melt 함수로 녹여진 형태의 데이털르 다시 여러 칼럼을 가진 형태로 변환해주는 함수이다. 반환하는 데이터 형태가 데이터 프레임일 경우는 dcast 함수를 사용하고 반환할 데이터의 형태가 벡터/행렬/배열일 경우 acast를 사용할 수 있다. 본 내용에서는 dcast 함수에 대해 알아본다. 
+
+dcast 함수를 사용하면 melt 함수가 적용된 형태의 데이터를 다시 melt 함수 적용 이전의 데이터 형태로 변환할 수도 있고, 앞서 배운 ddply 함수와 같이 식별자별 특정 변수의 측정치들에 대한 통계량을 계산할 수도 있다. 구체적인 활용법은 예제를 통해 함께 살펴보자.  
+
+dcast(data, formula, fun.aggregate=NULL)  
+"""
+options  
+  data : melt 함수가 적용된 형태의 데이터 프레임  
+  formula : 데이터를 변환할 포뮬러 지정  
+	"id 변수 ~ variable 변수" 형태로 입력  
+	"~앞뒤로 여러 개의 변수를 나열할 경우 + 기호로 각 변수를 연결"
+	명시적으로 나열되지 않은 모든 변수를 표현할 경우에는 ...을 사용
+	아무런 변수도 지정하지 않을 경우에는 .을 사용  
+fun.aggregate : id 변수를 기준으로 여러 행이 존재할 경우 해당 행들에 적용할 집합함수
+"""
+air_melt<-melt(airquality, id.vars=c("Month", "Day"), na.rm=T)
+air_dcast<-dcast(air_melt, Month + Day ~ ...)
+```
+
+# data.table  
+
+```R
+data.table 패키지는 연산속도가 매우 빨라 크기가 큰 데이터를 처리하거나 탐색하는데 유용하며, 그만큼 자주 사용되는 패키지이다. 데이터 테이블을 데이터 프레임과 동일하게 취급되므로 데이터 프레임에 적용할 수 있는 함수들을 데이터 테이블에 적용할 수도 있다.  
+```
+
+## 데이터 테이블 생성  
+
+```R
+데이터 테이블의 클래스는 데이터 프레임을 포함하고 있으므로 데이터 테이블은 데이터 프레임으로 변환해서 사용이 가능하다. 데이터 테이블은 데이터 프레임을 생성하는 것과 비슷한 문법으로 만들어낼 수 있으며, 관련 함수들은 아래와 같다.  
+
+# tag(변수명) = value(값)의 형태로 데이터 생성  
+data.table(tag =value, ...)
+
+# 데이터 테이블로 변환하고자 하는 데이터를 인자로 입력  
+as.data.frame(데이터프레임)
+
+# 모든 데이터 테이블 객체의 목록을 반환  
+tables()
+
+```
+
+
+
+
 
