@@ -1623,6 +1623,148 @@ iris_sample <- bind_rows(setosa_sample, versicolor_sample, virginica_sample)
 
 
 
+# 정규성 검정  
+
+```R
+# 1. 샤피로-윌크 검정
+
+# 샤피로-윌크 검정의 귀무가설은 '데이터가 정규분포를 따른다' 이고, 대립가설은 '데이터가 정규분포를 따르지 않는다' 이다.
+
+shapiro.test(data)
+```
+
+# 등분산성 검정  
+
+```R
+var.test(x, y, alternative)  
+var.test(formula, data, alternative)  
+
+"""
+options
+	x : 모집단 1로부터 측정한 관측값  
+	y : 모집단 2로부터 측정한 관측값  
+	formula : 수치형 벡터(종속변수) ~ 집단분류(독립변수)
+	data : 등분산 검정을 수행할 데이터명  
+	alternative : 양측검정시 "two.sided", 단측검정시 "less", "greater" 입력  
+"""
+```
+
+
+
+# T-검정 (T-test)  
+
+https://colab.research.google.com/drive/1PIZjm7zJ-CnXSKfzYah7ZZCEHllTFbXS?usp=sharing
+
+## one sample t-test
+
+```R
+# one sample t-test
+
+# 데이터가 정규분포를 따른다는 가정을 만족한 경우, t.test 함수를 사용하여 일표본-T검정을 수행한다.
+
+# 반면 데이터가 정규성을 만족하지 않는 경우, wilcox.test 함수를 이용해 T-검정을 수행한다.
+
+t.test(x, alternative=c("two.sided", "less", "greater"), mu=0)
+wilcox.test(x, alternative=c("two.sided", "less", "greater"), mu=0)
+
+"""
+options  
+	x : 표본으로부터 관측한 값 (수치형 벡터)  
+	alternative 
+		양측검정 : "two.sided" 입력
+		단측검정 
+			"less" : 표본 평균이 특정 값보다 작은지에 대해 검정을 수행할 시
+			"greater" : 특정 값보다 큰지에 대한 검정 수행 시  
+	mu : 검정시 기준이 되는 값  
+"""
+```
+
+## two-sample t-test   
+
+```R
+# R에서 대응표본 t-검정을 수행하기 위해 사용하는 함수는 t.test이며, 문법은 아래와 같다.  
+
+t.test(x, y, alternative=c("two.sided", "less", "greater"), paired=FALSE, m=0)  
+
+"""
+options 
+	x : 처리방법이 x일 때의 관측값 (모집단에서 x처리 관측값)
+	y : 처리방법이 y일 때의 관측값 (모집단에서 y처리 관측값)
+ 	alternative 
+		양측검정시 "two.sided" 
+		단측검정시 "less", "greater"  
+	paired : 대응표본 t-검정을 수행할지에 대한 여부  
+		FALSE : 기본값  
+		TRUE : 대응표본 t-검정 수행시 TRUE로 지정  
+	m 
+		: 검정의 기준이 되는 값으로 기본 값은 0
+		: 대응표본 t-검정에서는 모평균의 차이가 0인지를 검정하기 때문에,		
+		  m인자는 적지 않아도 된다.  
+"""
+```
+
+## Independent sample t-test
+
+```R
+t.test(x, y, alternative, var.equal=FALSE)
+t.test(formula, data, alternative, var.equal=FALSE)  
+
+"""
+options  
+	x : 모집단 1로부터 측정한 관측값 (수치형 벡터)
+	y : 모집단 2로부터 측정한 관측값 (수치형 벡터)
+	formula 
+		수치형 벡터(종속변수) ~ 집단분류(독립변수)
+		데이터프레임을 t.test함수에 적용시킬 때 사용  
+	data : t-검정을 수행할 데이터명  
+	alternative : 양측검정시 "two.sided", 단측검정시 "less", "greater" 입력  
+	equal : 등분산성을 만족하는지의 여부 (TRUE or FALSE)  
+"""  
+```
+
+
+
+# 교차분석  
+
+https://colab.research.google.com/drive/1PIZjm7zJ-CnXSKfzYah7ZZCEHllTFbXS?usp=sharing
+
+## 적합성 검정  
+
+```R
+chisq.test(x, y, p)  
+
+"""
+options  
+	x : 검정하고자 하는 데이터가 저장된 숫자 벡터 혹은 행렬  
+	y : 검정하고자 하는 데이터가 저장된 숫자 벡터 혹은 행렬 (x가 행렬일 경우 y인자는 무시된다.)
+	p : 귀무가설을 통해 설정한 확률 값을 지정  
+"""
+```
+
+## 독립성 검정  
+
+```R
+# 인자로는 두 변수에 대한 분할표가 들어감
+chisq.test(x, y)
+
+# 분할표를 생성하기 위해선 xtabs와 table 함수를 이용함  
+xtabs(formula, data)
+"""
+options  
+	formula : 분할표를 만들고자 하는 변수를 `n ~ a1 + a2 + a3`와 같은 형태로 지정  
+		n - 빈도를 나타내는 변수(없다면 생략 가능)
+		a1 ~ a3 : 분할표에서 범주를 나타내는 변수  
+	data : 포뮬러를 적용시킬 데이터  
+"""
+
+# 위 함수는 결국 결과값은 같음 
+
+table(범주형 변수) # 도수분포표 생성  
+table(범주형 변수1, 범주형 변수2) # 두 변수 간 이원분할표 생성  
+```
+
+
+
 # plyr  
 
 ```R
