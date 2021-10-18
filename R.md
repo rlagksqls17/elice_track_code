@@ -1818,6 +1818,45 @@ options
 """
 ```
 
+# 상관분석
+
+```R
+# 두 데이터 간 상관계수를 산출하기 위해서 사용  
+cor(x, y, method=c("pearson", "kendall", "spearman"), use)  
+"""
+x : 연속형 자료 (벡터, 행렬, 데이터프레임)
+y : 연속형 자료 (벡터, 행렬, 데이터프레임, NULL)  
+method 
+	- 상관계수를 계산할 유형을 지정  
+	- default : "pearson"
+	- etc : "kendall", "spearman"
+use  
+	- na값 처리 방법  
+	"everything" : 결측값 존재 시 NA 출력  
+	"all.obs" : 결측값 존재 시 오류 메시지 출력  
+	"complete.obs" : 변수별로 결측값을 제외하고 상관계수 계산  
+	"pairwise.complete.obs" : 모든 변수 쌍에서 결측값이 없는 데이터들에 대해 상관계수 계산  
+"""  
+
+# 산출한 상관계수에 대한 가설 검정을 수행할 때는 cor.test 사용  
+cor.test(x, y, alternative=c("two.sided", "less", "greater"), 
+        method = c("pearson", "kendall", "spearman"))  
+
+
+# 상관계수 행렬을 시각화하기 위해 pairs 함수와 corrplot 패키지의 corrplot 함수를 사용 가능, corrplot 함수는 변수 간 상관계수를 다양한 모양과 색깔의 도형을 시각화해줌  
+pairs(x, labels, ...)
+"""
+x : 시각화 할 행렬  
+labels : 그래프의 제목  
+"""
+
+corrplot(corr, method, ...)  
+"""
+corr : 시각화 할 상관행렬  
+method : 데이터를 표현할 형태 지정
+"""
+```
+
 
 
 # plyr  

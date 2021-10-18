@@ -1,4 +1,4 @@
-# 데이터 구조  
+# 3데이터 구조  
 
 ## 리스트
 
@@ -516,6 +516,23 @@ x[x < 3]
 # array([0, 1, 2])
 ```
 
+## 판다스 to 넘파이  
+
+```python
+df_num = df.to_numpy()
+```
+
+## 넘파이 to 판다스  
+
+```python
+df_pd = pd.DataFrame(df_num)
+
+# 변환과 동시에 변수 이름 지정  
+df_pd2 = pd.DataFrame(data = df_num, columns = ["continent", "brand", "size", "period", "price"])
+```
+
+
+
 # ---  
 
 # pandas  
@@ -634,6 +651,13 @@ country.iloc[0]
 country.iloc[1:3, :2]
 ```
 
+## indexing  
+
+```python
+# index를 1부터 다시 적용
+df.reset_index(drop=True, inplace=True)
+```
+
 ### DataFrame 새 데이터 추가와 수정 , 삭제
 
 ```python
@@ -677,6 +701,38 @@ len(dataframe)
 dataframe["이름"] # 컬럼이름아 하나만 있다면 Series 반환
 dataframe[['이름', '주소', '나이']] # 리스트로 들어가 있다면 DataFrame
 ```
+
+### 대체
+
+#### replace
+
+```python
+# replace 기능을 활용해 {} 안에 변수명과 기존값, 새로운 값을 매칭하여 지정한 후, 이를 데이터셋에 적용
+1. 
+recode_brand = {"brand" : {1: 1, 2: 1, 3: 2}}
+df_recode1 = df.replace(recode_brand)
+
+2. data['industry'] = data['industry'].replace([1, 2, 3, 4], ['Service', 'IT', 'Finance', 'Others'])
+```
+
+#### 함수이용  
+
+```python
+# 함수로 정의하는 방법은 다소 어려울 수 있지만, 한번 만든 함수를 다룬 경우에도 조금만 수정해서 활용할 수 있어서 편리함
+def brand_groups(data):
+    if data == 1:
+        return 1
+    elif data == 2:
+        return 1
+   	elif data == 3:
+        return 2
+    
+df['re_brand'] = df['brand'].apply(brand_groups)
+```
+
+
+
+
 
 ### df.isnull, df.notnull
 
@@ -746,8 +802,8 @@ df.sort_values(['col2', 'col1'])
 ### .value_counts
 
 ```python
-## 상위 10개 행을 출력
-df['value'].value_counts([:10]) ? 
+## 해당 컬럼의 번주와 수를 상위 10개 행을 출력
+df['value'].value_counts() 
 ```
 
 
@@ -930,7 +986,7 @@ John Smith	 CPU			Debra Henley	35000	1		35000.000000	1.000000
 Wendy Yule	 CPU			Fred Anderson	165000	7		82500.000000	3.500000
 			Maintenance		Fred Anderson	7000	3		7000.000000		3.000000
 			Monitor			Fred Anderson	5000	2		5000.000000		2.000000
-All										  522000   30	   30705.882353	    1.764706
+All										  522000   30	   30705.882353	    1.764706  
 ```
 
 
@@ -1020,6 +1076,18 @@ x = crime_anal[col].values
 x_scaled = preprocessing.MinMaxScaler().fit_transform(x.astype(float))
 crime_anal_norm = pd.DataFrame(x_scaled, columns=col, index=crime_anal.index)
 ```
+
+## 상관분석  
+
+```python
+import pandas as pd  
+
+df = df.DataFrame(data)
+corr = df.corr(method='pearson')
+print(corr)
+```
+
+
 
 
 
