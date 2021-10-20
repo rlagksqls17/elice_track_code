@@ -1,4 +1,4 @@
-# 3데이터 구조  
+# 데이터 구조  
 
 ## 리스트
 
@@ -578,9 +578,7 @@ A.add(B, fill_value=0)
 
 
 
-## DataFrame  
-
-## 데이터 확인
+## 데이터 확인과 전처러
 
 ```python
 gdp = pd.Series(gdp_dict)
@@ -629,9 +627,22 @@ country = pd.read_excel('country.xlsx')
 df.isnull().sum()
 ```
 
+### 이상치 확인과 제거 
+
+```python
+# 이상치를 판단하는 명백한 기준은 없다.  
+# 분석자의 주관적인 판단에 따라서 제거하는 것이 일반적이다.  
+1. IQR 기준  
+Q1_salary = data['salary'].quantile(q = 0.25)
+Q3_salary = data['salary'].quantile(q = 0.75)
+IQR_salary = Q3_salary - Q1_salary  
+
+# 이제 IQR을 알았으니 IQR의 1.5배보다 큰 값과 작은 값을 제거하고 다시 데이터 셋에 할당해보자.  
+data_IQR = data[(data['salary'] < Q3_salary + IQR_salary * 1.5) & (data['salary'] > Q1_salary - IQR_salary * 1.5)]
+data_IQR['salary'].hist()
+```
 
 
-## 데이터 전처리
 
 ### 인덱싱과 슬라이싱  
 
@@ -1084,6 +1095,11 @@ import pandas as pd
 
 df = df.DataFrame(data)
 corr = df.corr(method='pearson')
+"""
+method : "pearson" (default)
+	   : "spearman"  
+	   : "kendall"
+"""  
 print(corr)
 ```
 
